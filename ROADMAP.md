@@ -12,7 +12,7 @@ and the 46 audited defects of v1. This file is the execution order only.
 | --- | --- | --- | --- | --- | --- |
 | 0 | [Foundations](#phase-0--foundations) | 14 | 3 | 0.5 d | **done** |
 | 1 | [Vertical slice](#phase-1--vertical-slice) | 68 | 95 | 8 d | **done, tests partial** |
-| 2 | [Identity, conditions, validation](#phase-2--identity-conditions-validation) | 26 | 90 | 8 d | not started |
+| 2 | [Identity, conditions, validation](#phase-2--identity-conditions-validation) | 26 | 90 | 8 d | **done, tests partial** |
 | 3 | [Scope tree](#phase-3--scope-tree) | 20 | 50 | 5 d | not started |
 | 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | not started |
 | 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | not started |
@@ -147,7 +147,44 @@ whose condition is satisfied beats an unconditional one. Everything else is an e
 specificity score — two conditional bindings that both match is an exception, not a contest.
 
 **Fixes** D2 (the "as a last resort, take the first binding" fallback, which made every condition
-advisory), D8, D31.
+advisory), D8 (no cycle detection at all), D31 (`WithId` not counted as identity).
+
+**Status — the definition of done is met.** 121 runtime files, 37 test files, 52 EditMode tests and
+4 PlayMode tests green, zero compiler warnings. Each clause has its test:
+`Resolve_TwoUnconditionalBindingsOfOneContract_ThrowsShowingBothCandidates` (and asserts the
+`file:line` of both candidates is in the message),
+`Resolve_WhenInjectedIntoAnotherConsumer_ThrowsInsteadOfHandingItOver`,
+`Build_WithValidateOnBuildAndAConstructorCycle_ThrowsWithThePath`, and
+`Validate_AHealthyGraph_ReturnsAnEmptyReport` paired with
+`Validate_AHealthyGraph_InstantiatesNothing`.
+
+`CallSite.Dependencies` is now populated: `CallSiteFactory` recurses through constructor parameters
+and every member site, which is what makes both build-time validation and build-time cycle detection
+possible. The lifetime-aware cycle policy is in: an all-constructor cycle is always an error, a
+member-edge cycle between non-transient registrations is allowed because the cache write in
+`CreateAndStore` precedes injection.
+
+**Deliberately left for later:**
+
+- **Tests: 56 of the planned ~185 for phases 1 and 2 together.** The set that covers both definitions
+  of done and the critical defects.
+- `BindInterfacesTo` / `BindInterfacesAndSelfTo` — listed under this phase in the summary but not in
+  `08-PLAN.md`'s scope paragraph, and one `Registration` carrying N contracts already works. The two
+  verbs are sugar over it; they land with the `ContainerBuilderServiceExtensions` batch.
+- `CaptiveDependencyValidator` and `ValidateScopes` — phase 3 owns them, so `ValidateScopes` is a
+  flag nothing reads yet.
+- `UJ004`, `UJ010`, `UJ015` — the warning and info codes. Only errors are reported so far;
+  `ValidationReport` already carries severity and counts them.
+
+**Two deviations from the dossier, both forced by C#:**
+
+- `CompositeCondition` is split in two. The tree says it should be "`IStaticCondition` iff every part
+  is", which no single C# type can express. `CompositeCondition` implements `IStaticCondition`,
+  `DynamicCompositeCondition` does not, and `CompositeCondition.Create` picks. Every other site keeps
+  the single `is IStaticCondition` test.
+- `WhenInjectedInto<T>()` and `WhenNotInjectedInto<T>()` are instance methods on `Binder<,>`, not
+  extension methods. As extensions they would need all three type arguments spelled out at the call
+  site, which C# requires all-or-nothing. The `params Type[]` overloads stay extensions.
 
 ---
 

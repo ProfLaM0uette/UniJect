@@ -41,6 +41,14 @@ namespace LaM0uette.UniJect
             AddSelfRegistrations(index, container, injector);
             WarmInjectionPlans(frozen, injector);
 
+            if (options.ValidateOnBuild)
+            {
+                ValidationReport report = ContainerValidator.Validate(container);
+
+                if (report.ErrorCount > 0)
+                    throw new ContainerValidationException(report);
+            }
+
             builder.Phase = BuildPhase.Built;
 
             IReadOnlyList<Action<DIContainer>> callbacks = builder.Callbacks;
@@ -84,7 +92,9 @@ namespace LaM0uette.UniJect
 
             IActivator activator = source.Build(draft.ConcreteType, injector);
 
-            IBindingCondition condition = draft.Conditions.Count == 0 ? null : draft.Conditions[0];
+            IBindingCondition condition = draft.Conditions.Count == 0
+                ? null
+                : CompositeCondition.Create(draft.Conditions.ToArray());
 
             return new Registration(
                 draft.ContractTypes.ToArray(),

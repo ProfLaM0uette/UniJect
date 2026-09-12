@@ -29,6 +29,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   resolution chain and a near-matches block.
 - Unity layer: `SceneContext`, `MonoInstaller`, scene-scoped injection with `SceneInjectionMode`,
   and the Unity releaser and liveness policy.
+- `WithId`, which makes the id half of a binding's identity: a request without an id can no longer
+  be served by a binding that carries one, and the reverse.
+- The condition family — `When`, `WhenInjectedInto`, `WhenInjectedIntoInstance`, their `WhenNot*`
+  counterparts and `IfNotBound` — accumulating as AND. Conditions that can be answered at
+  build time cost nothing at resolution; the others keep their call site out of the cache.
+- Collection contracts: an `IEnumerable<T>`, `IReadOnlyList<T>`, `IList<T>`, `List<T>` or `T[]`
+  dependency receives every binding of `T`, innermost container first, conditions still filtering.
+  No match is an empty collection, never an exception.
+- `Validate()` and `ValidateOnBuild`, walking the whole dependency graph by type and instantiating
+  nothing. Failures are collected into a `ValidationReport` rather than thrown one at a time.
+- Build-time cycle detection with the path printed, aware of lifetimes: a constructor cycle is
+  always an error, a member-injection cycle between non-transient bindings is allowed.
 
 ### Fixed
 

@@ -41,6 +41,11 @@ namespace LaM0uette.UniJect
             get { return _options; }
         }
 
+        internal CallSiteFactory CallSites
+        {
+            get { return _callSites; }
+        }
+
         internal DIContainer(
             DIContainer parent,
             Registration[] registrations,
@@ -109,31 +114,16 @@ namespace LaM0uette.UniJect
                 throw new ArgumentNullException(nameof(contractType));
 
             AssertUsable("resolve");
+            MainThreadGuard.Assert();
 
-            ServiceIdentifier identifier = new ServiceIdentifier(contractType, null);
-            List<object> instances = new List<object>();
             ResolutionRequest request = ResolutionRequest.ForRoot(contractType, null);
+            return ResolveElements(contractType, in request);
+        }
 
-            for (DIContainer current = this; current != null; current = current.Parent)
-            {
-                if (!current._index.TryGetValue(identifier, out RegistrationGroup group))
-                    continue;
-
-                IReadOnlyList<Registration> registrations = group.Registrations;
-
-                for (int i = 0; i < registrations.Count; i++)
-                {
-                    Registration registration = registrations[i];
-
-                    if (registration.Condition != null && !registration.Condition.Matches(in request))
-                        continue;
-
-                    CallSite site = new CallSite(registration, group.AllConditionsStatic);
-                    instances.Add(current.GetOrActivate(site, in request, NO_ARGUMENTS, 0));
-                }
-            }
-
-            return instances;
+        public ValidationReport Validate()
+        {
+            AssertUsable("validate");
+            return ContainerValidator.Validate(this);
         }
 
         public bool HasBinding(Type contractType, object id)
@@ -242,6 +232,40 @@ namespace LaM0uette.UniJect
         internal bool TryGetGroup(in ServiceIdentifier identifier, out RegistrationGroup group)
         {
             return _index.TryGetValue(identifier, out group);
+        }
+
+        internal IReadOnlyList<object> ResolveElements(Type elementType, in ResolutionRequest request)
+        {
+            ServiceIdentifier identifier = new ServiceIdentifier(elementType, request.Id);
+            List<object> instances = new List<object>();
+
+            ResolutionRequest elementRequest = new ResolutionRequest(
+                identifier,
+                request.ConsumerType,
+                request.ConsumerInstance,
+                request.MemberName,
+                request.SiteKind);
+
+            for (DIContainer current = this; current != null; current = current.Parent)
+            {
+                if (!current._index.TryGetValue(identifier, out RegistrationGroup group))
+                    continue;
+
+                IReadOnlyList<Registration> registrations = group.Registrations;
+
+                for (int i = 0; i < registrations.Count; i++)
+                {
+                    Registration registration = registrations[i];
+
+                    if (registration.Condition != null && !registration.Condition.Matches(in elementRequest))
+                        continue;
+
+                    CallSite site = new CallSite(registration, group.AllConditionsStatic);
+                    instances.Add(current.GetOrActivate(site, in elementRequest, NO_ARGUMENTS, 0));
+                }
+            }
+
+            return instances;
         }
 
         internal object ResolveRequest(in ResolutionRequest request, ResolutionPath path, int depth)
