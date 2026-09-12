@@ -26,6 +26,74 @@ editor window: about 20 days, and the container is complete on bindings and fact
 
 ---
 
+## What is left
+
+The eight phases are done. This is the backlog after them, checked against the disk rather than
+against memory, ordered by what would bite a consumer first. Nothing here blocks using the package
+in a personal project except the first item, and that only for project-scope bindings.
+
+### Blocks one feature today
+
+- **No `[CreateAssetMenu]` anywhere.** `ProjectContextSettings` and `ScriptableObjectInstaller`
+  cannot be created from Unity's `Create` menu, so project-scope installers are unreachable without
+  hand-writing an editor script. Scene-scope bindings are unaffected. Two attributes, ten minutes —
+  and the settings asset still has to be dropped into Preloaded Assets by hand until phase 7's
+  settings page grows a button for it.
+
+### Public surface the dossier promises and this does not have
+
+- `BindInterfacesTo<T>()` and `BindInterfacesAndSelfTo<T>()`. One `Registration` carrying N contracts
+  already works; these two verbs are sugar over it. ~1 h.
+- `ContainerBuilderServiceExtensions` — the twelve `AddSingleton` / `AddScoped` / `AddTransient` /
+  `TryAdd` / `Replace` one-liners. `02-API.md` §5 calls this "your request for the same syntax as
+  plain dotnet, delivered literally", so it is an explicit ask that is not met. ~1 h.
+
+### Documentation
+
+- `Documentation~/` is entirely absent: `index.md`, `binding-cookbook.md`, `diagnostics.md` (one
+  section per `UJxxx`), `lifecycle.md`, `il2cpp-and-stripping.md`, `faq.md`,
+  `migrating-from-uniject-v1.md`. The package ships with a README and six samples and nothing else.
+
+### Tests — 135 of the planned ~386
+
+Every definition of done and all six critical defects are covered. The named suites still missing:
+`ConstructorSelectorTests`, `InjectionOrderTests`, `RegistrationSelectorTests` (the 14 lattice
+cases), `DisposalOwnershipTests`, `ContainerEagerLoadTests`, `InjectableInterfaceTests`,
+`ReflectionBudgetTests`, `FileConventionTests`, `ServiceExtensionsTests`, `BindTransformTests`,
+`PlacementApplierTests`, `HierarchyComponentActivatorTests`, `MonoBinderCompilationTests`,
+`LegacyChainCompilationTests` (the 27 audited chains, word for word),
+`SceneContextInstallOrderTests`, `SceneInjectionScopeTests`, `DontDestroyOnLoadTests`,
+`TeardownOrderTests`.
+
+**Compiled but never exercised by a test**, so the corners most likely to hold a bug:
+`FromNewPrefabResource`, the `Position` / `Rotation` / `Transform` placement verbs,
+`DontDestroyOnLoad` at runtime, factories above one parameter, `IParams` of 3 to 6,
+`IInjectable` of 2 to 8, `ScriptableObjectInstaller`, `ProjectContextSettings`, genuinely additive
+scenes, and the container window and play-mode gate in real use.
+
+### Diagnostics not emitted
+
+- `UJ010` (binding not statically validatable), `UJ011` (a transient `IDisposable` resolved from the
+  root), `UJ015` (dead binding). All Info or Warning.
+- `UJ002` exists as behaviour — `DuplicateBindingException` does throw — but carries no code and has
+  no test.
+
+### AOT
+
+- `AotConformanceTests` does not exist and no IL2CPP player build has ever run. `LinkXmlGenerator`
+  and `StrippingLevelCheck` are written and compile. This needs the IL2CPP module installed.
+
+### Minor
+
+- `InjectionTimelineWindow` — a second window, pure addition.
+- `CappedArgumentPool` is written and in the statics reset table but not on the hot path;
+  `ReflectionInjector` still allocates its argument arrays. No consumer to profile yet.
+- The container window's edit-mode preview reads installers sitting on the `SceneContext`'s own
+  GameObject, not its serialised `_installers` array.
+- `ContainerWindow` builds its UI in code rather than from `.uxml` / `.uss`.
+
+---
+
 ## Phase 0 — Foundations
 
 Package layout, six assemblies, the C# 9 rules, a CI that runs without a Unity licence.
