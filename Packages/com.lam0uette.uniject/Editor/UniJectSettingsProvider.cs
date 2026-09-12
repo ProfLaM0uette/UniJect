@@ -50,6 +50,61 @@ namespace LaM0uette.UniJect
 
             root.Add(block);
             root.Add(scopes);
+            root.Add(BuildProjectContextSection());
+        }
+
+        private static VisualElement BuildProjectContextSection()
+        {
+            VisualElement section = new VisualElement();
+            section.style.marginTop = 14;
+
+            Label title = new Label("Project context");
+            title.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
+            section.Add(title);
+
+            Label state = new Label();
+            state.style.marginTop = 4;
+            state.style.marginBottom = 4;
+            section.Add(state);
+
+            Button create = new Button { text = "Create and preload the settings asset" };
+            section.Add(create);
+
+            create.clicked += () =>
+            {
+                ProjectContextSettingsSetup.CreateAndPreload();
+                Describe(state, create);
+            };
+
+            Describe(state, create);
+            return section;
+        }
+
+        private static void Describe(Label state, Button create)
+        {
+            ProjectContextSettings settings = ProjectContextSettingsSetup.Find();
+
+            if (settings == null)
+            {
+                state.text = "No ProjectContextSettings asset yet — project-scope installers cannot run.";
+                create.text = "Create and preload the settings asset";
+                create.SetEnabled(true);
+
+                return;
+            }
+
+            if (!ProjectContextSettingsSetup.IsPreloaded(settings))
+            {
+                state.text = "The asset exists but is not in Preloaded Assets, so it is never loaded.";
+                create.text = "Add it to Preloaded Assets";
+                create.SetEnabled(true);
+
+                return;
+            }
+
+            state.text = "Ready: the settings asset exists and is preloaded.";
+            create.text = "Nothing to do";
+            create.SetEnabled(false);
         }
 
         #endregion

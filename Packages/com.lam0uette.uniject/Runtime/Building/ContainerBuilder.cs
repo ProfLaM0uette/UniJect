@@ -93,6 +93,47 @@ namespace LaM0uette.UniJect
             return draft;
         }
 
+        internal int RemoveDeclared(Type contractType, object id)
+        {
+            AssertDeclaring("replace a binding");
+
+            int removed = 0;
+
+            for (int i = _drafts.Count - 1; i >= 0; i--)
+            {
+                if (!Equals(_drafts[i].Id, id) || !Declares(_drafts[i].ContractTypes, contractType))
+                    continue;
+
+                _drafts.RemoveAt(i);
+                removed++;
+            }
+
+            for (int i = _registrations.Count - 1; i >= 0; i--)
+            {
+                if (!Equals(_registrations[i].Id, id) ||
+                    !Declares(_registrations[i].ContractTypes, contractType))
+                {
+                    continue;
+                }
+
+                _registrations.RemoveAt(i);
+                removed++;
+            }
+
+            return removed;
+        }
+
+        private static bool Declares(IReadOnlyList<Type> contracts, Type contractType)
+        {
+            for (int i = 0; i < contracts.Count; i++)
+            {
+                if (ReferenceEquals(contracts[i], contractType))
+                    return true;
+            }
+
+            return false;
+        }
+
         internal bool IsDeclared(Type contractType, object id)
         {
             for (int i = 0; i < _drafts.Count; i++)

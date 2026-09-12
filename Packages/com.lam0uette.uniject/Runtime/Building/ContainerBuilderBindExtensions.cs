@@ -41,6 +41,23 @@ namespace LaM0uette.UniJect
         }
 
 
+        public static Binder<TConcrete, TConcrete> BindInterfacesTo<TConcrete>(
+            this IContainerBuilder builder,
+            [CallerFilePath] string sourceFile = null,
+            [CallerLineNumber] int sourceLine = 0)
+        {
+            return DeclareInterfaces<TConcrete>(builder, false, sourceFile, sourceLine);
+        }
+
+        public static Binder<TConcrete, TConcrete> BindInterfacesAndSelfTo<TConcrete>(
+            this IContainerBuilder builder,
+            [CallerFilePath] string sourceFile = null,
+            [CallerLineNumber] int sourceLine = 0)
+        {
+            return DeclareInterfaces<TConcrete>(builder, true, sourceFile, sourceLine);
+        }
+
+
         public static void Install(this IContainerBuilder builder, IInstaller installer)
         {
             if (builder == null)
@@ -52,6 +69,44 @@ namespace LaM0uette.UniJect
             installer.Install(builder);
         }
 
+
+        private static Binder<TConcrete, TConcrete> DeclareInterfaces<TConcrete>(
+            IContainerBuilder builder,
+            bool includeSelf,
+            string sourceFile,
+            int sourceLine)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            Type concreteType = typeof(TConcrete);
+            Type[] interfaces = concreteType.GetInterfaces();
+
+            if (interfaces.Length == 0 && !includeSelf)
+            {
+                throw new InvalidBindingException(
+                    IssueCode.UJ003,
+                    concreteType,
+                    Origin(sourceFile, sourceLine),
+                    concreteType.Name + " implements no interface, so BindInterfacesTo has nothing to bind");
+            }
+
+            BindingDraft draft = new BindingDraft
+            {
+                ConcreteType = concreteType,
+                Origin = Origin(sourceFile, sourceLine)
+            };
+
+            for (int i = 0; i < interfaces.Length; i++)
+                draft.ContractTypes.Add(interfaces[i]);
+
+            if (includeSelf)
+                draft.ContractTypes.Add(concreteType);
+
+            Sink(builder).AddDraft(draft);
+
+            return new Binder<TConcrete, TConcrete>(draft);
+        }
 
         private static BindingDraft Declare(
             IContainerBuilder builder,

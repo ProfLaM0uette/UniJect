@@ -28,33 +28,16 @@ editor window: about 20 days, and the container is complete on bindings and fact
 
 ## What is left
 
-The eight phases are done. This is the backlog after them, checked against the disk rather than
-against memory, ordered by what would bite a consumer first. Nothing here blocks using the package
-in a personal project except the first item, and that only for project-scope bindings.
+The eight phases are done, and so is the first round of follow-up: `[CreateAssetMenu]` plus a
+*Create and preload* button in `Project Settings > UniJect` (project-scope bindings now work end to
+end), `BindInterfacesTo` / `BindInterfacesAndSelfTo`, the twelve-method .NET façade, and the seven
+`Documentation~` pages.
 
-### Blocks one feature today
+This is what is left after that, checked against the disk rather than against memory, ordered by
+what would bite a consumer first. **Nothing here blocks using the package in a personal project**
+outside IL2CPP.
 
-- **No `[CreateAssetMenu]` anywhere.** `ProjectContextSettings` and `ScriptableObjectInstaller`
-  cannot be created from Unity's `Create` menu, so project-scope installers are unreachable without
-  hand-writing an editor script. Scene-scope bindings are unaffected. Two attributes, ten minutes —
-  and the settings asset still has to be dropped into Preloaded Assets by hand until phase 7's
-  settings page grows a button for it.
-
-### Public surface the dossier promises and this does not have
-
-- `BindInterfacesTo<T>()` and `BindInterfacesAndSelfTo<T>()`. One `Registration` carrying N contracts
-  already works; these two verbs are sugar over it. ~1 h.
-- `ContainerBuilderServiceExtensions` — the twelve `AddSingleton` / `AddScoped` / `AddTransient` /
-  `TryAdd` / `Replace` one-liners. `02-API.md` §5 calls this "your request for the same syntax as
-  plain dotnet, delivered literally", so it is an explicit ask that is not met. ~1 h.
-
-### Documentation
-
-- `Documentation~/` is entirely absent: `index.md`, `binding-cookbook.md`, `diagnostics.md` (one
-  section per `UJxxx`), `lifecycle.md`, `il2cpp-and-stripping.md`, `faq.md`,
-  `migrating-from-uniject-v1.md`. The package ships with a README and six samples and nothing else.
-
-### Tests — 135 of the planned ~386
+### Tests — 147 of the planned ~386
 
 Every definition of done and all six critical defects are covered. The named suites still missing:
 `ConstructorSelectorTests`, `InjectionOrderTests`, `RegistrationSelectorTests` (the 14 lattice
