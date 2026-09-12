@@ -8,7 +8,7 @@ namespace LaM0uette.UniJect
             this Binder<TContract, TConcrete> binder)
             where TConcrete : TContract
         {
-            binder.Draft.SetSource(ConstructorActivatorSource.Instance);
+            binder.Draft.SetDefaultSource();
             return binder;
         }
 

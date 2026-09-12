@@ -7,6 +7,8 @@ namespace LaM0uette.UniJect
             SceneScopeRegistry.Reset();
             ProjectContext.Reset();
             SceneInjector.Reset();
+            InactiveInstantiationScope.Reset();
+            UnityObjectFinder.Reset();
             MainThreadGuard.Capture();
         }
     }

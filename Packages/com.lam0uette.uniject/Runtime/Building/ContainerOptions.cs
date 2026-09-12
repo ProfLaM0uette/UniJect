@@ -54,6 +54,7 @@ namespace LaM0uette.UniJect
         public IInstanceLivenessPolicy Liveness { get; set; }
         public IResolutionObserver Observer { get; set; }
         public IReadOnlyList<IInstanceReleaser> Releasers { get; set; }
+        public IDefaultSourceRule DefaultSourceRule { get; set; }
 
         #endregion
 

@@ -7,6 +7,7 @@ namespace LaM0uette.UniJect
             ContainerOptions options = ContainerOptions.Default;
             options.Liveness = UnityLivenessPolicy.Instance;
             options.Releasers = new IInstanceReleaser[] { DisposableReleaser.Instance, UnityObjectReleaser.Instance };
+            options.DefaultSourceRule = ComponentDefaultSourceRule.Instance;
 
             return options;
         }

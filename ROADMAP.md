@@ -14,7 +14,7 @@ and the 46 audited defects of v1. This file is the execution order only.
 | 1 | [Vertical slice](#phase-1--vertical-slice) | 68 | 95 | 8 d | **done, tests partial** |
 | 2 | [Identity, conditions, validation](#phase-2--identity-conditions-validation) | 26 | 90 | 8 d | **done, tests partial** |
 | 3 | [Scope tree](#phase-3--scope-tree) | 20 | 50 | 5 d | **done, tests partial** |
-| 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | not started |
+| 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | **done, tests partial** |
 | 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | not started |
 | 6 | [Tickables and PlayerLoop](#phase-6--tickables-and-playerloop) | 9 | 18 | 2.5 d | not started |
 | 7 | [Diagnostics and editor tooling](#phase-7--diagnostics-and-editor-tooling) | 15 | 25 | 8 d | not started |
@@ -272,6 +272,45 @@ unconfigured Mono binding now creates instead of hijacking an existing component
 `FromComponentOnGameObject` only searches and throws if absent while
 `FromNewComponentOnGameObject` always adds; `FromComponentInHierarchy` throws instead of quietly
 creating.
+
+**Status — the definition of done is met.** 155 runtime files, 54 test files, 63 EditMode and 26
+PlayMode tests green, zero compiler warnings. The headline clauses:
+`FromNewGameObject_WithNoPoseVerb_LeavesTheTransformAlone` and
+`FromNewPrefab_OnATemplateWithAnAuthoredTransform_KeepsIt` are **D3**;
+`FromNewPrefab_ASpawnedComponent_ReadsItsDependencyInsideAwake` is the injected-before-`Awake`
+guarantee; `Name_WithNoFromVerbAtAll_StillCreatesAndPlacesTheGameObject` and
+`ParentThenRoot_LastWriteWins_AndTheObjectEndsAtTheSceneRoot` are the free verb order; and
+`PlacementVerbs_AreConstrainedToComponent_SoTheyCannotCompileOnAPlainClass` reads the generic
+constraint by reflection, standing in for the compile error.
+
+**How the verb order was actually made free.** The dossier has the placement verbs promote the
+source slot, and `FromNew()` set `ConstructorActivatorSource`. Written literally, `.Name("x")`
+followed by `.FromNew()` would throw the placement away. Two small decisions fix it without adding
+a member to `BindingDraft`: `FromNew()` is the *default* rather than a specific source, so it never
+overrides a source already chosen; and the default-source rule fires when the source is absent
+**or** is the core's own constructor source, which is what lets `.FromNew()` mean "new GameObject
+plus AddComponent" for a `Component` and `new T(...)` for everything else.
+
+**Where the injection actually happens.** `ComponentActivator` splits the six-step dance across
+`Create` and `Inject` so that the container's cache write still lands between them — the property
+that breaks member-injection cycles. `Create` provides the host, freezes it and adds the component;
+`Inject` injects, applies placement and re-activates, which is what makes `Awake` fire with every
+dependency already in place. The prefab path injects the whole subtree inside `Create`, because the
+component search has to happen after injection.
+
+**Deliberately left for later:**
+
+- **Tests: 89 of the planned ~295 across phases 1 to 4.**
+- `UJ008` (`.Parent(t)` with `.DontDestroyOnLoad()`) and `UJ009` are not emitted. Both are warnings,
+  and reaching them needs the build pipeline to inspect a `GameObjectSource`, which the core cannot
+  do without a validation seam on `IActivatorSource`. That seam belongs with the phase 7 diagnostics
+  work, which is also where warnings become visible.
+- `InactiveInstantiationScope` is one pooled holder per domain rather than one per container. The
+  holder only ever owns an instance between `Instantiate` and the re-parent in the placement step, so
+  per-container buys nothing; it is registered in the statics reset table either way.
+- `UnityObjectFinder` carries no `#if UNITY_6000_5_OR_NEWER`. The dossier expects one for
+  `FindObjectsSortMode`, but the hierarchy search is scene-scoped through `GetRootGameObjects`, so
+  `FindObjectsByType` is never called and the conditional has nothing to guard.
 
 ---
 

@@ -23,6 +23,24 @@ namespace LaM0uette.UniJect
             return CONTAINERS.TryGetValue(scene, out container);
         }
 
+        public static bool TryGetScene(DIContainer container, out Scene scene)
+        {
+            foreach (KeyValuePair<Scene, DIContainer> entry in CONTAINERS)
+            {
+                for (DIContainer current = container; current != null; current = current.Parent)
+                {
+                    if (!ReferenceEquals(entry.Value, current))
+                        continue;
+
+                    scene = entry.Key;
+                    return true;
+                }
+            }
+
+            scene = default;
+            return false;
+        }
+
         public static void Unregister(Scene scene)
         {
             CONTAINERS.Remove(scene);

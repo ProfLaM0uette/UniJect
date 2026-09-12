@@ -53,6 +53,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   scope checking is on.
 - A statics reset table that runs at subsystem registration, so entering play mode repeatedly with
   domain reload disabled behaves identically every time.
+- GameObject sources, all constrained to `Component` at compile time: `FromNewGameObject`,
+  `FromNewPrefab`, `FromNewPrefabResource`, `FromNewComponentOnGameObject`,
+  `FromComponentInHierarchy` and `FromComponentOnGameObject`.
+- Placement verbs `Name`, `Parent`, `Root`, `DontDestroyOnLoad`, `Transform`, `Position`, `Rotation`
+  and `Scale`, usable before a `From*` verb, after it, or with no `From*` verb at all.
+- A component spawned by the container reads its injected dependencies inside `Awake`: the host is
+  frozen before the component is added and re-activated only once injection and placement are done.
+
+### Fixed
+
+- A created GameObject no longer comes out at scale zero with an invalid rotation, and a prefab
+  keeps its authored transform. Every pose component is nullable and an unset one is never written.
+- `FromComponentOnGameObject` and `FromComponentInHierarchy` search only and throw when nothing
+  matches, where they used to create silently. `FromNewComponentOnGameObject` always adds.
+- Destroying a container destroys the GameObjects it created and nothing else: a component it merely
+  found on a scene object is never destroyed.
 
 ### Fixed
 

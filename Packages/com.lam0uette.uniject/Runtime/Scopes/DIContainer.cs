@@ -240,6 +240,21 @@ namespace LaM0uette.UniJect
             return _index.TryGetValue(identifier, out group);
         }
 
+        internal void AdoptToRoot(object instance)
+        {
+            if (ReferenceEquals(this, Root))
+                return;
+
+            for (DIContainer current = this; current != null && current != Root; current = current.Parent)
+            {
+                if (!current._disposal.TryDetach(instance, out Ownership ownership))
+                    continue;
+
+                Root._disposal.Track(instance, ownership);
+                return;
+            }
+        }
+
         internal IReadOnlyList<object> ResolveElements(Type elementType, in ResolutionRequest request)
         {
             ServiceIdentifier identifier = new ServiceIdentifier(elementType, request.Id);

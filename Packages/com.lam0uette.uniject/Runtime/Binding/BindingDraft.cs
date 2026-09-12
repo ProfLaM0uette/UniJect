@@ -32,6 +32,12 @@ namespace LaM0uette.UniJect
             Source = source;
         }
 
+        public void SetDefaultSource()
+        {
+            if (Source == null || Source is ConstructorActivatorSource)
+                Source = ConstructorActivatorSource.Instance;
+        }
+
         public void SetLifetime(Lifetime lifetime)
         {
             Lifetime = lifetime;

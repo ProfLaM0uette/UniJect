@@ -19,7 +19,7 @@ namespace LaM0uette.UniJect
 
             for (int i = 0; i < drafts.Count; i++)
             {
-                Registration registration = ToRegistration(drafts[i], injector, registrations);
+                Registration registration = ToRegistration(drafts[i], injector, registrations, options);
 
                 if (registration != null)
                     registrations.Add(registration);
@@ -65,7 +65,8 @@ namespace LaM0uette.UniJect
         private static Registration ToRegistration(
             BindingDraft draft,
             IInjector injector,
-            List<Registration> alreadyEmitted)
+            List<Registration> alreadyEmitted,
+            ContainerOptions options)
         {
             if (draft.ContractTypes.Count == 0)
                 throw new InvalidBindingException(IssueCode.UJ003, null, draft.Origin, "the binding declares no contract");
@@ -73,21 +74,7 @@ namespace LaM0uette.UniJect
             if (draft.IfNotBound && IsBound(alreadyEmitted, draft))
                 return null;
 
-            IActivatorSource source = draft.Source;
-
-            if (source == null)
-            {
-                if (draft.ConcreteType == null || draft.ConcreteType.IsAbstract || draft.ConcreteType.IsInterface)
-                {
-                    throw new InvalidBindingException(
-                        IssueCode.UJ003,
-                        draft.ContractTypes[0],
-                        draft.Origin,
-                        "the concrete type is abstract or an interface and no From* source was declared");
-                }
-
-                source = ConstructorActivatorSource.Instance;
-            }
+            IActivatorSource source = ResolveSource(draft, options);
 
             Lifetime lifetime = ResolveLifetime(draft, source);
             ValidateCombination(draft, source, lifetime);
@@ -107,6 +94,33 @@ namespace LaM0uette.UniJect
                 condition,
                 draft.NonLazy,
                 draft.Origin);
+        }
+
+        private static IActivatorSource ResolveSource(BindingDraft draft, ContainerOptions options)
+        {
+            IActivatorSource source = draft.Source;
+
+            if (source != null && !(source is ConstructorActivatorSource))
+                return source;
+
+            IActivatorSource resolved = options.DefaultSourceRule?.Resolve(draft.ConcreteType);
+
+            if (resolved != null)
+                return resolved;
+
+            if (source != null)
+                return source;
+
+            if (draft.ConcreteType == null || draft.ConcreteType.IsAbstract || draft.ConcreteType.IsInterface)
+            {
+                throw new InvalidBindingException(
+                    IssueCode.UJ003,
+                    draft.ContractTypes[0],
+                    draft.Origin,
+                    "the concrete type is abstract or an interface and no From* source was declared");
+            }
+
+            return ConstructorActivatorSource.Instance;
         }
 
         private static Lifetime ResolveLifetime(BindingDraft draft, IActivatorSource source)
