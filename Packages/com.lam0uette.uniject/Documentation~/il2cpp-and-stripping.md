@@ -25,6 +25,30 @@ project that carries an `[Inject]` site.
 over its own adapter constructor, so every instantiation the container needs already exists at the
 call site where you wrote the binding.
 
+**Collections resolve to arrays.** An `IEnumerable<T>`, `IReadOnlyList<T>`, `IList<T>`,
+`ICollection<T>` or `IReadOnlyCollection<T>` dependency receives a `T[]`, which satisfies all of
+them. Arrays are built with `Array.CreateInstance`, which IL2CPP handles for any element type in the
+build — no runtime generic construction at all.
+
+## The one shape to avoid
+
+**Asking for a concrete `List<T>`.** That is the only contract the container cannot satisfy with an
+array, so it falls back to `typeof(List<>).MakeGenericType(...)` plus `Activator.CreateInstance`.
+Under IL2CPP that throws `ExecutionEngineException` when `List<T>` for that exact `T` was never
+instantiated statically anywhere in your build — which is easy to hit with a value type.
+
+```csharp
+public Referee(List<IRule> rules)          // avoid: runtime generic construction
+public Referee(IReadOnlyList<IRule> rules) // prefer: you get a IRule[], nothing constructed
+```
+
+Every interface-shaped collection is free of the problem. If you genuinely need a mutable `List<T>`,
+copy it yourself from the injected array.
+
+The only other `Activator.CreateInstance` in the library is the boxed `default(T)` handed to an
+unresolved `[InjectOptional]` **value-type** parameter. It is not a generic construction, so it is
+far lower risk, but it is the second place to look if something surprises you.
+
 ## What you still have to do
 
 **Keep managed stripping at `Low`.** Above that, a type only ever reached through `[Inject]` can

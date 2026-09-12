@@ -64,7 +64,30 @@ scenes, and the container window and play-mode gate in real use.
 ### AOT
 
 - `AotConformanceTests` does not exist and no IL2CPP player build has ever run. `LinkXmlGenerator`
-  and `StrippingLevelCheck` are written and compile. This needs the IL2CPP module installed.
+  and `StrippingLevelCheck` are written and compile. Verifying this needs the IL2CPP module for the
+  target platform installed, plus a development build with stripping at `Low`.
+- **One real hazard was found and fixed by auditing rather than building.** Collections used to be
+  materialised with `typeof(List<>).MakeGenericType(...)` plus `Activator.CreateInstance`, which
+  throws `ExecutionEngineException` under IL2CPP whenever that exact `List<T>` was never
+  instantiated statically — trivially reachable with a value-type element. Interface-shaped
+  collections now receive a `T[]` built with `Array.CreateInstance`, with no runtime generic
+  construction at all. Asking for a **concrete `List<T>`** is the one shape that still takes the old
+  path; it is documented in `il2cpp-and-stripping.md`.
+- The only other runtime `Activator.CreateInstance` is the boxed `default(T)` for an unresolved
+  `[InjectOptional]` value-type parameter. Not a generic construction, far lower risk.
+
+### CoreCLR (Unity 7)
+
+Nothing to do, as far as can be told without the runtime in hand. `Runtime/` uses no `AppDomain`,
+no `Assembly.Load`, no `Marshal`, no `DllImport`, no `unsafe`, and no thread creation — only
+mainstream BCL reflection (`GetFields`, `GetProperties`, `GetMethods`, `GetConstructors`,
+`GetInterfaceMap`, `GetCustomAttributes`, `SetValue`, `Invoke`) and `ConditionalWeakTable`, all of
+which CoreCLR supports better than Mono does. The C# 9 floor only relaxes under a newer compiler.
+
+The two places to re-check when it lands are Unity-side rather than runtime-side: the
+`UnityEngine.LowLevel.PlayerLoop` shape used by `PlayerLoopTickPump`, and the domain-reload
+semantics the statics reset table depends on. `LinkXmlGenerator` uses
+`AppDomain.CurrentDomain.GetAssemblies()`, but it is editor-only.
 
 ### Minor
 

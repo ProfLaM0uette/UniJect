@@ -40,11 +40,16 @@ namespace LaM0uette.UniJect
             for (int i = 0; i < items.Count; i++)
                 array.SetValue(items[i], i);
 
-            if (contractType.IsArray)
+            if (!IsConcreteList(contractType))
                 return array;
 
             Type listType = typeof(List<>).MakeGenericType(elementType);
             return Activator.CreateInstance(listType, array);
+        }
+
+        public static bool IsConcreteList(Type contractType)
+        {
+            return contractType.IsGenericType && contractType.GetGenericTypeDefinition() == typeof(List<>);
         }
     }
 }

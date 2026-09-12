@@ -63,7 +63,7 @@ namespace LaM0uette.UniJect
         }
 
         [Test]
-        public void Resolve_AReadOnlyListContract_MaterializesAList()
+        public void Resolve_AReadOnlyListContract_IsSatisfiedByAnArray()
         {
             ContainerBuilder builder = new ContainerBuilder();
             builder.Bind<IWeapon, Sword>().AsSingleton();
@@ -71,7 +71,50 @@ namespace LaM0uette.UniJect
 
             using (DIContainer container = builder.Build(ContainerOptions.Relaxed))
             {
-                Assert.That(container.Resolve<IReadOnlyList<IWeapon>>().Count, Is.EqualTo(2));
+                IReadOnlyList<IWeapon> weapons = container.Resolve<IReadOnlyList<IWeapon>>();
+
+                Assert.That(weapons.Count, Is.EqualTo(2));
+                Assert.That(weapons, Is.InstanceOf<IWeapon[]>());
+            }
+        }
+
+        [Test]
+        public void Resolve_EveryInterfaceShapedCollection_AvoidsTheGenericListEntirely()
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.Bind<IWeapon, Sword>().AsSingleton();
+
+            using (DIContainer container = builder.Build(ContainerOptions.Relaxed))
+            {
+                Assert.That(container.Resolve<IEnumerable<IWeapon>>(), Is.InstanceOf<IWeapon[]>());
+                Assert.That(container.Resolve<IList<IWeapon>>(), Is.InstanceOf<IWeapon[]>());
+                Assert.That(container.Resolve<ICollection<IWeapon>>(), Is.InstanceOf<IWeapon[]>());
+            }
+        }
+
+        [Test]
+        public void Resolve_AConcreteListContract_StillMaterializesARealList()
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.Bind<IWeapon, Sword>().AsSingleton();
+            builder.Bind<IWeapon, Bow>().AsSingleton();
+
+            using (DIContainer container = builder.Build(ContainerOptions.Relaxed))
+            {
+                Assert.That(container.Resolve<List<IWeapon>>(), Is.InstanceOf<List<IWeapon>>());
+                Assert.That(container.Resolve<List<IWeapon>>().Count, Is.EqualTo(2));
+            }
+        }
+
+        [Test]
+        public void Resolve_ACollectionOfValueTypes_NeedsNoRuntimeGenericConstruction()
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.BindInstance(7).WithId("a");
+
+            using (DIContainer container = builder.Build(ContainerOptions.Relaxed))
+            {
+                Assert.That(container.Resolve<IEnumerable<int>>(), Is.InstanceOf<int[]>());
             }
         }
 
