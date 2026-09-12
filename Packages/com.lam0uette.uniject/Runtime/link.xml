@@ -1,0 +1,4 @@
+<linker>
+  <assembly fullname="LaM0uette.UniJect" preserve="all" />
+  <assembly fullname="LaM0uette.UniJect.Unity" preserve="all" />
+</linker>

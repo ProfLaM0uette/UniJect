@@ -10,8 +10,8 @@ and the 46 audited defects of v1. This file is the execution order only.
 
 | # | Phase | Files | Tests | Effort | Status |
 | --- | --- | --- | --- | --- | --- |
-| 0 | [Foundations](#phase-0--foundations) | 14 | 3 | 0.5 d | in progress |
-| 1 | [Vertical slice](#phase-1--vertical-slice) | 68 | 95 | 8 d | not started |
+| 0 | [Foundations](#phase-0--foundations) | 14 | 3 | 0.5 d | **done** |
+| 1 | [Vertical slice](#phase-1--vertical-slice) | 68 | 95 | 8 d | **done, tests partial** |
 | 2 | [Identity, conditions, validation](#phase-2--identity-conditions-validation) | 26 | 90 | 8 d | not started |
 | 3 | [Scope tree](#phase-3--scope-tree) | 20 | 50 | 5 d | not started |
 | 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | not started |
@@ -93,6 +93,40 @@ public override void Install()
 Plus: a scene `MonoBehaviour` reads a non-null `[Inject] private ILogger` in its `Start()`, a
 missing binding throws with the full resolution chain, and `Dispose()` releases in reverse creation
 order.
+
+**Status — the definition of done is met.** 105 runtime files, 26 test files, 24 EditMode tests and
+4 PlayMode tests green, zero compiler warnings. Each clause is covered by a test:
+`Resolve_UnboundContract_ThrowsInsteadOfReturningNull`,
+`Resolve_UnregisteredNestedDependency_ExposesTheFullResolutionPath`,
+`Dispose_OwnedSingletons_ReleasesInReverseCreationOrder`,
+`Inject_OnASceneBehaviour_FillsThePrivateInjectField`, and
+`ContainerBuilder_PublicSurface_ExposesNoResolveDuringInstall` (reflection over `IContainerBuilder`,
+standing in for the compile error until the phase 2 compilation tests exist).
+
+**Deliberately left for later:**
+
+- **Tests: 28 of the planned ~95.** The set that covers the definition of done and the critical
+  defects. The rest is deferrable per D-11.
+- `DIContainer.Validate()`, `ValidationReport` and the `ValidateOnBuild` graph walk — phase 2 owns
+  them, so `CallSite.Dependencies` is declared but never populated and no build-time cycle walk runs.
+  Runtime cycle detection is in place and tested.
+- `UJ004` (two distinct sources) is counted on the draft but not reported: warnings need the phase 2
+  `ValidationReport`.
+- The `Container:` and `Installers:` lines of the `BindingNotFoundException` message. The core
+  cannot know a `SceneContext` name; that block needs a seam the Unity layer fills, which belongs
+  with the phase 7 diagnostics work. Everything else in the message — first line, resolution chain,
+  near matches, fix — is there.
+- `ContainerBuilderServiceExtensions` (the twelve .NET one-liners) — not in the phase 1 scope list.
+
+**Two deviations from the dossier, both deliberate:**
+
+- `PreserveAttribute` is **not** `sealed`. Both `02-API.md` and `EN-12` declare it `sealed` *and*
+  derive `InjectAttributeBase` from it; that does not compile. Dropping `sealed` is the only reading
+  that preserves the stated intent (every `[Inject]` site preserves itself under IL2CPP).
+- `DEVELOPMENT_BUILD` is replaced by `DEBUG` in `ContainerOptions.Default` and `MainThreadGuard`.
+  Unity 6.6 deprecates the symbol (`warning UAC0009`) and points at the managed-code-variant
+  directives. `DEBUG` is defined in the editor and in development builds, so the semantics the
+  dossier asks for are unchanged.
 
 ---
 

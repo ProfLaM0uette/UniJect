@@ -1,0 +1,23 @@
+{
+    "name": "LaM0uette.UniJect.PlayTests",
+    "rootNamespace": "LaM0uette.UniJect",
+    "references": [
+        "LaM0uette.UniJect",
+        "LaM0uette.UniJect.Unity",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

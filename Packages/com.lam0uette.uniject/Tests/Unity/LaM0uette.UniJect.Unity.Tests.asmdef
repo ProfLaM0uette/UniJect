@@ -4,10 +4,13 @@
     "references": [
         "LaM0uette.UniJect",
         "LaM0uette.UniJect.Unity",
+        "LaM0uette.UniJect.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

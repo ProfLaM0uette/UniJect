@@ -15,5 +15,6 @@
     "container",
     "inversion-of-control"
   ],
-  "hideInEditor": false
+  "hideInEditor": false,
+  "dependencies": {}
 }

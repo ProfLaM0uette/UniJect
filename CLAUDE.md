@@ -22,12 +22,34 @@ here — this is a clean implementation against a frozen specification, built ph
 
 | Working on | Read |
 | --- | --- |
-| C# — language level, types, spacing, namespaces, `#region`, tests | `.claude/rules/csharp.md` **(this copy is the authority, not the global one)** |
+| C# — language level, types, spacing, namespaces, `#region`, tests | `Packages/com.lam0uette.uniject/.claude/rules/csharp.md` **(this copy is the authority, not the global one)** |
 | What to build next, in what order | `ROADMAP.md` |
-| Why anything is the way it is — API surface, algorithms, `UJxxx` codes, the 46 v1 defects | the design document *Conception UniJect v2*: <https://claude.ai/code/artifact/338242cf-8e87-4c1a-8ae5-4ec9716b5043> |
+| Why anything is the way it is | the design dossier at `D:\Unity\Projets\UniJect\docs\` — see the map below |
 
-The design document is the specification. When a decision is not obvious from the code, it is
-argued there — read it before inventing an answer.
+**The dossier is the specification, and it is decision-complete.** Never invent architecture: the
+answer is in one of these twelve documents. Read the one you need before writing code.
+
+| Document | Answers |
+| --- | --- |
+| `00-DECISIONS.md` | the fifteen decisions and why each went the way it did |
+| `01-CONTRAINTES.md` | Unity 6.6, C# 9, IL2CPP, domain reload, fake-null |
+| `02-API.md` | the frozen public surface, signature by signature |
+| `03-ARCHITECTURE.md` | assemblies, layers, the type model |
+| `04-ARBORESCENCE.md` | every file to create, with its role — **the authority on where a file goes** |
+| `05-ALGORITHMES.md` | build, resolution, injection, prefabs, cycles, teardown, the statics reset table |
+| `06-ERREURS.md` | the exceptions and the fifteen `UJxxx` codes |
+| `07-AUDIT-V1.md` | the 46 v1 defects, and what is worth keeping |
+| `08-PLAN.md` | the eight phases and each one's definition of done |
+| `09-TESTS-DEMOS.md` | the deferrable test plan and the six samples |
+| `10-RISQUES.md` | eighteen traps with their mitigation — **re-read at the end of every phase** |
+
+`docs/annexes/EN-12-DEFINITIVE-ARCHITECTURE.md` is the long English version of the whole dossier:
+exhaustive signatures, code excerpts, mapping tables. It settles any detail the French files leave
+open. The v1 source being replaced is at
+`D:\Unity\Projets\MGA\Assets\Plugins\LaM0uette\MGA\Lib\UniJect`.
+
+The same content is also published as an artifact:
+<https://claude.ai/code/artifact/338242cf-8e87-4c1a-8ae5-4ec9716b5043>.
 
 ## Commands
 
