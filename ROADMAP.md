@@ -16,7 +16,7 @@ and the 46 audited defects of v1. This file is the execution order only.
 | 3 | [Scope tree](#phase-3--scope-tree) | 20 | 50 | 5 d | **done, tests partial** |
 | 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | **done, tests partial** |
 | 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | **done, tests partial** |
-| 6 | [Tickables and PlayerLoop](#phase-6--tickables-and-playerloop) | 9 | 18 | 2.5 d | not started |
+| 6 | [Tickables and PlayerLoop](#phase-6--tickables-and-playerloop) | 9 | 18 | 2.5 d | **done** |
 | 7 | [Diagnostics and editor tooling](#phase-7--diagnostics-and-editor-tooling) | 15 | 25 | 8 d | not started |
 | 8 | [Extraction and release](#phase-8--extraction-and-release) | — | — | 0.5 d | not started |
 | | **v1.0 total** | **~224** | **~386** | **~45 d** | |
@@ -384,6 +384,31 @@ N `Update()` methods means N native-to-managed transitions per frame in undefine
 PlayerLoop node means one transition, in deterministic order.
 
 **Definition of done**: an `ITickable` written in pure C# ticks without any `MonoBehaviour`.
+
+**Status — the definition of done is met, and this phase has its full test count.** 227 runtime
+files, 74 test files, 82 EditMode and 35 PlayMode tests green, zero compiler warnings.
+
+Every clause has its test:
+`Tick_APureCSharpTickable_TicksOncePerFrameWithNoMonoBehaviour` counts a delta over three frames and
+asserts exactly three ticks — no `MonoBehaviour` anywhere in the graph;
+`Tick_AThrowingTickable_ReportsTheFailureWithoutStoppingTheOthers` asserts both that the failure is
+reported and that the tickable registered after it still ran;
+`Tick_ATickableAddedDuringATick_OnlyRunsFromTheNextTick` covers the snapshot rule;
+`StartTicking_Once_InsertsExactlyThreeNodes` and
+`Reset_AfterRegistration_RemovesExactlyOurThreeNodes` cover the PlayerLoop surgery; and
+`Reset_ThenRegisterAgainThreeTimes_NeverStacksExtraNodes` is the "three Play sessions in a row"
+protocol, asserting three nodes and one container on every pass rather than two then three.
+
+**The core still never sees `PlayerLoop`, and never logs.** `LifecycleRunner.Tick` takes an
+`Action<Exception>` and hands each failure to it; the Unity pump is what calls
+`Debug.LogException`. That keeps the "the core throws, it does not log" rule intact while giving
+the dossier's "logged and does not stop the others" behaviour, and it is why the failure assertion
+can be made in an EditMode test with no console noise.
+
+**Node removal is surgical.** `PlayerLoopTickPump.Reset` walks the current loop and drops only
+subsystems whose type is `TickPhase`, `FixedTickPhase` or `LateTickPhase`, then sets the loop back.
+It never calls `SetPlayerLoop(GetDefaultPlayerLoop())`, which would silently delete every other
+package's nodes. `CountNodes()` exists so a test can assert exactly that.
 
 ---
 

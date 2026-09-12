@@ -91,6 +91,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `IInjectable<...>` is recognised by exact open-generic match against the generated type list,
   never by a name prefix, so a user interface that merely starts with `IInjectable` is left alone.
 
+### Added
+
+- `ITickable`, `IFixedTickable` and `ILateTickable`, driven by three PlayerLoop nodes placed just
+  after Unity's own behaviour update, fixed update and late update. A plain C# class bound as a
+  non-lazy singleton ticks once per frame with no `MonoBehaviour` involved, which turns N
+  native-to-managed transitions per frame into one, in registration order.
+- A tickable that throws is reported and the ones after it still run; the pump logs, the container
+  never does.
+- Adding or removing a tickable during a tick takes effect on the next tick: each pass runs over a
+  snapshot.
+- Leaving play mode removes exactly the three nodes this package added and no others. Entering play
+  mode repeatedly never stacks duplicates, so every session ticks once per frame.
+
 ### Fixed
 
 - An unregistered type now throws instead of resolving to `null`, and there is no last-resort

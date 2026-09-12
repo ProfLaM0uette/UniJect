@@ -55,6 +55,7 @@ namespace LaM0uette.UniJect
         public IResolutionObserver Observer { get; set; }
         public IReadOnlyList<IInstanceReleaser> Releasers { get; set; }
         public IDefaultSourceRule DefaultSourceRule { get; set; }
+        public ITickRegistry TickRegistry { get; set; }
 
         #endregion
 

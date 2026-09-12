@@ -215,6 +215,7 @@ namespace LaM0uette.UniJect
                 return;
 
             IsDisposed = true;
+            StopTicking();
 
             for (int i = _children.Count - 1; i >= 0; i--)
                 _children[i].Dispose();
@@ -348,6 +349,41 @@ namespace LaM0uette.UniJect
         internal void RunInitialize()
         {
             _lifecycle.Initialize();
+        }
+
+        internal bool HasTickables
+        {
+            get { return _lifecycle.HasTickables; }
+        }
+
+        internal void StartTicking()
+        {
+            _options.TickRegistry?.Add(this);
+        }
+
+        internal void StopTicking()
+        {
+            _options.TickRegistry?.Remove(this);
+        }
+
+        internal void Tick(float deltaTime, Action<Exception> onError)
+        {
+            _lifecycle.Tick(deltaTime, onError);
+        }
+
+        internal void FixedTick(float fixedDeltaTime, Action<Exception> onError)
+        {
+            _lifecycle.FixedTick(fixedDeltaTime, onError);
+        }
+
+        internal void LateTick(float deltaTime, Action<Exception> onError)
+        {
+            _lifecycle.LateTick(deltaTime, onError);
+        }
+
+        internal void UnregisterTickable(object instance)
+        {
+            _lifecycle.Unregister(instance);
         }
 
         internal void ResolveNonLazy()

@@ -29,6 +29,7 @@ namespace LaM0uette.UniJect
             Container.ResolveNonLazy();
             SceneInjector.Inject(Container, gameObject.scene, _injectionMode, this);
             Container.RunInitialize();
+            Container.StartTicking();
         }
 
         private void OnDestroy()
@@ -36,6 +37,7 @@ namespace LaM0uette.UniJect
             if (Container == null)
                 return;
 
+            Container.StopTicking();
             SceneScopeRegistry.Unregister(gameObject.scene);
 
             Container.Dispose();

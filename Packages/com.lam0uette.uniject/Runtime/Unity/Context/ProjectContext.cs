@@ -65,6 +65,9 @@ namespace LaM0uette.UniJect
             _container.ResolveNonLazy();
             _container.RunInitialize();
 
+            if (Application.isPlaying)
+                _container.StartTicking();
+
             return _container;
         }
 

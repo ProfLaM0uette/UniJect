@@ -6,6 +6,7 @@ namespace LaM0uette.UniJect
         {
             SceneScopeRegistry.Reset();
             ProjectContext.Reset();
+            PlayerLoopTickPump.Reset();
             SceneInjector.Reset();
             InactiveInstantiationScope.Reset();
             UnityObjectFinder.Reset();

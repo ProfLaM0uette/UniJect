@@ -8,6 +8,7 @@ namespace LaM0uette.UniJect
             options.Liveness = UnityLivenessPolicy.Instance;
             options.Releasers = new IInstanceReleaser[] { DisposableReleaser.Instance, UnityObjectReleaser.Instance };
             options.DefaultSourceRule = ComponentDefaultSourceRule.Instance;
+            options.TickRegistry = TickRegistry.Instance;
 
             return options;
         }
