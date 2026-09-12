@@ -1,0 +1,44 @@
+name: package-hygiene
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  hygiene:
+    name: Meta files, generator output, language level
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Every imported file has a .meta
+        run: |
+          missing=0
+          while IFS= read -r file; do
+            case "$file" in
+              *"~/"*) continue ;;
+              *.meta) continue ;;
+            esac
+            if [ ! -e "$file.meta" ]; then
+              echo "missing meta: $file"
+              missing=1
+            fi
+          done < <(find Packages/com.lam0uette.uniject -type f -not -path "*/.*")
+          exit $missing
+
+      - name: Re-running the arity generator produces no diff
+        run: |
+          dotnet run --project Packages/com.lam0uette.uniject/Tools~/ArityGenerator/ArityGenerator.csproj \
+            -- "$PWD/Packages/com.lam0uette.uniject"
+          git diff --exit-code -- Packages/com.lam0uette.uniject
+
+      - name: The core still compiles as C# 9
+        working-directory: Packages/com.lam0uette.uniject/CI~/DotNetTests
+        run: dotnet build --configuration Release

@@ -16,5 +16,37 @@
     "inversion-of-control"
   ],
   "hideInEditor": false,
-  "dependencies": {}
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "01 Hello container",
+      "description": "One binding, one injected field.",
+      "path": "Samples~/01-HelloContainer"
+    },
+    {
+      "displayName": "02 Scene context and installers",
+      "description": "Several installers, order-independent.",
+      "path": "Samples~/02-SceneContextAndInstallers"
+    },
+    {
+      "displayName": "03 GameObjects and prefabs",
+      "description": "Sources, placement verbs, and injected before Awake.",
+      "path": "Samples~/03-GameObjectsAndPrefabs"
+    },
+    {
+      "displayName": "04 Conditional bindings",
+      "description": "Ids and When conditions.",
+      "path": "Samples~/04-ConditionalBindings"
+    },
+    {
+      "displayName": "05 Factories",
+      "description": "BindFactory and PlaceholderFactory.",
+      "path": "Samples~/05-Factories"
+    },
+    {
+      "displayName": "06 Lifecycle",
+      "description": "Initialize, tick and dispose with no MonoBehaviour.",
+      "path": "Samples~/06-Lifecycle"
+    }
+  ]
 }

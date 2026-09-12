@@ -1,0 +1,23 @@
+name: core-tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  dotnet:
+    name: Core tests without a Unity licence
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Test the engine-free core
+        working-directory: Packages/com.lam0uette.uniject/CI~/DotNetTests
+        run: dotnet test --configuration Release --logger "console;verbosity=normal"

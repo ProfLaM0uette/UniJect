@@ -31,8 +31,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   and the Unity releaser and liveness policy.
 - `WithId`, which makes the id half of a binding's identity: a request without an id can no longer
   be served by a binding that carries one, and the reverse.
-- The condition family — `When`, `WhenInjectedInto`, `WhenInjectedIntoInstance`, their `WhenNot*`
-  counterparts and `IfNotBound` — accumulating as AND. Conditions that can be answered at
+- The condition family â€” `When`, `WhenInjectedInto`, `WhenInjectedIntoInstance`, their `WhenNot*`
+  counterparts and `IfNotBound` â€” accumulating as AND. Conditions that can be answered at
   build time cost nothing at resolution; the others keep their call site out of the cache.
 - Collection contracts: an `IEnumerable<T>`, `IReadOnlyList<T>`, `IList<T>`, `List<T>` or `T[]`
   dependency receives every binding of `T`, innermost container first, conditions still filtering.
@@ -61,16 +61,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - A component spawned by the container reads its injected dependencies inside `Awake`: the host is
   frozen before the component is added and re-activated only once injection and placement are done.
 
-### Fixed
-
-- A created GameObject no longer comes out at scale zero with an invalid rotation, and a prefab
-  keeps its authored transform. Every pose component is nullable and an unset one is never written.
-- `FromComponentOnGameObject` and `FromComponentInHierarchy` search only and throw when nothing
-  matches, where they used to create silently. `FromNewComponentOnGameObject` always adds.
-- Destroying a container destroys the GameObjects it created and nothing else: a component it merely
-  found on a scene object is never destroyed.
-
-### Added
 
 - Factories: `BindFactory`, `BindFactoryTo`, `BindPlaceholderFactory` and `BindPlaceholderFactoryTo`,
   each up to six parameters, with the product-first generic order preserved.
@@ -81,17 +71,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `UJ013`: a factory whose parameter list matches no constructor of its product is reported when the
   container is built, not when something first calls `Create`.
 
-### Fixed
-
-- `BindFactory<T>().FromMethod(...)` now calls the delegate it was given. The v1 cast to
-  `Func<TProduct>` was a conversion that cannot exist, so it was always null and every such binding
-  silently ignored its lambda.
-- `IParams` is flat instead of an inheritance tower, so an `IParams<string, int, float>` can no
-  longer satisfy a binding that asked for `IParams<string, int>`.
-- `IInjectable<...>` is recognised by exact open-generic match against the generated type list,
-  never by a name prefix, so a user interface that merely starts with `IInjectable` is left alone.
-
-### Added
 
 - `ITickable`, `IFixedTickable` and `ILateTickable`, driven by three PlayerLoop nodes placed just
   after Unity's own behaviour update, fixed update and late update. A plain C# class bound as a
@@ -103,6 +82,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   snapshot.
 - Leaving play mode removes exactly the three nodes this package added and no others. Entering play
   mode repeatedly never stacks duplicates, so every session ticks once per frame.
+- Six samples, each teaching one thing: hello container, installers, GameObjects and prefabs,
+  conditional bindings, factories, lifecycle.
+- A public API snapshot test over the 136 public core types, so the surface cannot drift unnoticed.
+- GitHub workflows: the core tests and the package hygiene checks run without a Unity licence on
+  every push; the Unity test run is reserved for tags, a weekly schedule and manual dispatch.
 - A container window under `Window > UniJect > Container`, listing every binding with its contract,
   concrete type, lifetime, id, condition, eagerness, state, injection count and `file:line`.
   Selecting a row opens the installer at that line. It works in play mode against the live
@@ -121,9 +105,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- A created GameObject no longer comes out at scale zero with an invalid rotation, and a prefab
+  keeps its authored transform. Every pose component is nullable and an unset one is never written.
+- `FromComponentOnGameObject` and `FromComponentInHierarchy` search only and throw when nothing
+  matches, where they used to create silently. `FromNewComponentOnGameObject` always adds.
+- Destroying a container destroys the GameObjects it created and nothing else: a component it merely
+  found on a scene object is never destroyed.
+
+
+- `BindFactory<T>().FromMethod(...)` now calls the delegate it was given. The v1 cast to
+  `Func<TProduct>` was a conversion that cannot exist, so it was always null and every such binding
+  silently ignored its lambda.
+- `IParams` is flat instead of an inheritance tower, so an `IParams<string, int, float>` can no
+  longer satisfy a binding that asked for `IParams<string, int>`.
+- `IInjectable<...>` is recognised by exact open-generic match against the generated type list,
+  never by a name prefix, so a user interface that merely starts with `IInjectable` is left alone.
+
+
 - An unregistered type now throws instead of resolving to `null`, and there is no last-resort
   "take the first binding" fallback.
 - Injection no longer recurses without a visited set, so mutually injected singletons complete
   instead of killing the editor with an uncatchable `StackOverflowException`.
 - `FromResolve()` returns the instance rather than a delegate wrapping another delegate, and points
   at the concrete type instead of its own contract.
+

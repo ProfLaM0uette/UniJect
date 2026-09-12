@@ -1,0 +1,671 @@
+class LaM0uette.UniJect.ActivationException
+    Constructor .ctor
+    Constructor .ctor
+    Property ConcreteType
+    Property Path
+class LaM0uette.UniJect.AliasActivator
+    Constructor .ctor
+    Method Create
+    Method Inject
+    Property DeclaredDependencies
+    Property Ownership
+    Property ProducedType
+    Property Target
+class LaM0uette.UniJect.AliasActivatorSource
+    Constructor .ctor
+    Method Build
+    Property Id
+class LaM0uette.UniJect.AmbiguousBindingException
+    Constructor .ctor
+    Property Candidates
+    Property ContractType
+    Property Id
+    Property Path
+class LaM0uette.UniJect.AmbiguousConstructorException
+    Constructor .ctor
+    Property Candidates
+    Property ConcreteType
+class LaM0uette.UniJect.ArgumentBag
+    Field EMPTY
+    Method Copy
+    Method TryTake
+class LaM0uette.UniJect.BinderConditionExtensions
+    Method IfNotBound
+    Method When
+    Method When
+    Method WhenInjectedInto
+    Method WhenInjectedIntoInstance
+    Method WhenNotInjectedInto
+    Method WhenNotInjectedIntoInstance
+    Method WithId
+class LaM0uette.UniJect.BinderLifetimeExtensions
+    Method AsScoped
+    Method AsSingleton
+    Method AsTransient
+    Method Lazy
+    Method NonLazy
+class LaM0uette.UniJect.BinderSourceExtensions
+    Method FromInstance
+    Method FromMethod
+    Method FromMethod
+    Method FromNew
+    Method FromResolve
+class LaM0uette.UniJect.Binder`2
+    Constructor .ctor
+    Method WhenInjectedInto
+    Method WhenNotInjectedInto
+    Property Draft
+class LaM0uette.UniJect.BindingDraft
+    Constructor .ctor
+    Method SetDefaultSource
+    Method SetLifetime
+    Method SetSource
+    Property ConcreteType
+    Property Conditions
+    Property ContractTypes
+    Property Id
+    Property Lifetime
+    Property NonLazy
+    Property Origin
+    Property Source
+class LaM0uette.UniJect.BindingNotFoundException
+    Constructor .ctor
+    Property ContractType
+    Property Id
+    Property NearMatches
+    Property Path
+class LaM0uette.UniJect.CircularDependencyException
+    Constructor .ctor
+    Property Path
+class LaM0uette.UniJect.CompositeCondition
+    Constructor .ctor
+    Method Create
+    Method Describe
+    Method Matches
+class LaM0uette.UniJect.ConstructorActivator
+    Constructor .ctor
+    Method Create
+    Method Inject
+    Property DeclaredDependencies
+    Property Ownership
+    Property ProducedType
+class LaM0uette.UniJect.ConstructorActivatorSource
+    Field Instance
+    Method Build
+class LaM0uette.UniJect.ContainerBuilder
+    Constructor .ctor
+    Method Add
+    Method Build
+    Method OnBuilt
+    Method TryAdd
+    Property Phase
+class LaM0uette.UniJect.ContainerBuilderBindExtensions
+    Method Bind
+    Method Bind
+    Method BindInstance
+    Method Install
+class LaM0uette.UniJect.ContainerBuilderFactoryExtensions
+    Method BindFactory
+    Method BindFactory
+    Method BindFactory
+    Method BindFactory
+    Method BindFactory
+    Method BindFactory
+    Method BindFactory
+    Method BindFactoryTo
+    Method BindFactoryTo
+    Method BindFactoryTo
+    Method BindFactoryTo
+    Method BindFactoryTo
+    Method BindFactoryTo
+    Method BindFactoryTo
+class LaM0uette.UniJect.ContainerBuilderPlaceholderFactoryExtensions
+    Method BindPlaceholderFactory
+    Method BindPlaceholderFactory
+    Method BindPlaceholderFactory
+    Method BindPlaceholderFactory
+    Method BindPlaceholderFactory
+    Method BindPlaceholderFactory
+    Method BindPlaceholderFactory
+    Method BindPlaceholderFactoryTo
+    Method BindPlaceholderFactoryTo
+    Method BindPlaceholderFactoryTo
+    Method BindPlaceholderFactoryTo
+    Method BindPlaceholderFactoryTo
+    Method BindPlaceholderFactoryTo
+    Method BindPlaceholderFactoryTo
+class LaM0uette.UniJect.ContainerOptions
+    Constructor .ctor
+    Method ResolveInjector
+    Method ResolveLiveness
+    Method ResolveObserver
+    Method ResolveReleasers
+    Property AssertMainThread
+    Property Default
+    Property DefaultSourceRule
+    Property Description
+    Property Injector
+    Property InstallerNames
+    Property Liveness
+    Property MaxResolutionDepth
+    Property Observer
+    Property Relaxed
+    Property Releasers
+    Property Strict
+    Property TickRegistry
+    Property ValidateOnBuild
+    Property ValidateScopes
+class LaM0uette.UniJect.ContainerPhaseException
+    Constructor .ctor
+    Property Actual
+    Property Operation
+    Property Required
+class LaM0uette.UniJect.ContainerResolveExtensions
+    Method CreateInstance
+    Method CreateInstance
+    Method HasBinding
+    Method Resolve
+    Method ResolveAll
+    Method ResolveId
+    Method TryResolve
+    Method TryResolveId
+class LaM0uette.UniJect.ContainerValidationException
+    Constructor .ctor
+    Property Report
+class LaM0uette.UniJect.DIContainer
+    Method CreateChildBuilder
+    Method CreateInstance
+    Method CreateInstance
+    Method Dispose
+    Method GetService
+    Method HasBinding
+    Method Inject
+    Method Resolve
+    Method ResolveAll
+    Method ResolveId
+    Method TryResolve
+    Method TryResolveId
+    Method Validate
+    Property IsDisposed
+    Property Parent
+    Property Root
+class LaM0uette.UniJect.DelegateActivator
+    Constructor .ctor
+    Method Create
+    Method Inject
+    Property DeclaredDependencies
+    Property Ownership
+    Property ProducedType
+class LaM0uette.UniJect.DelegateActivatorSource
+    Constructor .ctor
+    Method Build
+class LaM0uette.UniJect.DisposableReleaser
+    Field Instance
+    Method TryRelease
+class LaM0uette.UniJect.DuplicateBindingException
+    Constructor .ctor
+    Property ConcreteType
+    Property ContractType
+    Property First
+    Property Id
+    Property Second
+class LaM0uette.UniJect.DynamicCompositeCondition
+    Constructor .ctor
+    Method Describe
+    Method Matches
+class LaM0uette.UniJect.FactoryBinder`1
+    Method AsSingleton
+    Method AsTransient
+    Method FromInstance
+    Method FromMethod
+    Method FromMethod
+    Method FromNew
+    Method NonLazy
+    Method WithId
+    Property Draft
+    Property Product
+class LaM0uette.UniJect.FieldInjectionSite
+    Constructor .ctor
+    Property Field
+    Property Parameter
+class LaM0uette.UniJect.InjectAttribute
+    Constructor .ctor
+    Constructor .ctor
+    Property Id
+class LaM0uette.UniJect.InjectAttributeBase
+class LaM0uette.UniJect.InjectOptionalAttribute
+    Constructor .ctor
+    Constructor .ctor
+    Property Id
+class LaM0uette.UniJect.InjectableInterfaceSite
+    Constructor .ctor
+    Property Method
+    Property Parameters
+class LaM0uette.UniJect.InjectedIntoInstanceCondition
+    Constructor .ctor
+    Method Describe
+    Method Matches
+class LaM0uette.UniJect.InjectedIntoTypeCondition
+    Constructor .ctor
+    Method Describe
+    Method Matches
+class LaM0uette.UniJect.InjectionHelper
+    Method InjectAll
+class LaM0uette.UniJect.InjectionPlan
+    Constructor .ctor
+    Field EMPTY
+    Property Constructor
+    Property ConstructorParameters
+    Property Fields
+    Property HasMemberSites
+    Property InjectableInterfaces
+    Property Methods
+    Property Properties
+class LaM0uette.UniJect.InstanceActivator
+    Constructor .ctor
+    Method Create
+    Method Inject
+    Property DeclaredDependencies
+    Property Ownership
+    Property ProducedType
+class LaM0uette.UniJect.InstanceActivatorSource
+    Constructor .ctor
+    Method Build
+    Property Instance
+class LaM0uette.UniJect.InvalidBindingException
+    Constructor .ctor
+    Property Code
+    Property ContractType
+    Property Origin
+class LaM0uette.UniJect.InvalidInjectionTargetException
+    Constructor .ctor
+    Property DeclaringType
+    Property MemberName
+    Property Reason
+class LaM0uette.UniJect.IssueCode
+    Field UJ001
+    Field UJ002
+    Field UJ003
+    Field UJ004
+    Field UJ005
+    Field UJ006
+    Field UJ007
+    Field UJ008
+    Field UJ009
+    Field UJ010
+    Field UJ011
+    Field UJ012
+    Field UJ013
+    Field UJ014
+    Field UJ015
+class LaM0uette.UniJect.MainThreadGuard
+    Method Assert
+    Method Capture
+    Method Release
+class LaM0uette.UniJect.MethodInjectionSite
+    Constructor .ctor
+    Property Method
+    Property Parameters
+class LaM0uette.UniJect.NoSuitableConstructorException
+    Constructor .ctor
+    Property ConcreteType
+class LaM0uette.UniJect.NotInjectedIntoInstanceCondition
+    Constructor .ctor
+    Method Describe
+    Method Matches
+class LaM0uette.UniJect.NotInjectedIntoTypeCondition
+    Constructor .ctor
+    Method Describe
+    Method Matches
+class LaM0uette.UniJect.NullLivenessPolicy
+    Field Instance
+    Method IsAlive
+class LaM0uette.UniJect.NullResolutionObserver
+    Field Instance
+    Method InjectionCompleted
+    Method ResolutionCompleted
+class LaM0uette.UniJect.ObjectFactory
+    Constructor .ctor
+    Method BeginInvoke
+    Method EndInvoke
+    Method Invoke
+class LaM0uette.UniJect.Params`2
+    Constructor .ctor
+    Property P1
+    Property P2
+class LaM0uette.UniJect.Params`3
+    Constructor .ctor
+    Property P1
+    Property P2
+    Property P3
+class LaM0uette.UniJect.Params`4
+    Constructor .ctor
+    Property P1
+    Property P2
+    Property P3
+    Property P4
+class LaM0uette.UniJect.Params`5
+    Constructor .ctor
+    Property P1
+    Property P2
+    Property P3
+    Property P4
+    Property P5
+class LaM0uette.UniJect.Params`6
+    Constructor .ctor
+    Property P1
+    Property P2
+    Property P3
+    Property P4
+    Property P5
+    Property P6
+class LaM0uette.UniJect.PlaceholderFactoryBase`1
+class LaM0uette.UniJect.PlaceholderFactoryBinder`2
+    Method AsSingleton
+    Method AsTransient
+    Method FromMethod
+    Method NonLazy
+    Method WithId
+    Property Draft
+    Property Product
+class LaM0uette.UniJect.PlaceholderFactory`1
+    Method Create
+class LaM0uette.UniJect.PlaceholderFactory`2
+    Method Create
+class LaM0uette.UniJect.PlaceholderFactory`3
+    Method Create
+class LaM0uette.UniJect.PlaceholderFactory`4
+    Method Create
+class LaM0uette.UniJect.PlaceholderFactory`5
+    Method Create
+class LaM0uette.UniJect.PlaceholderFactory`6
+    Method Create
+class LaM0uette.UniJect.PlaceholderFactory`7
+    Method Create
+class LaM0uette.UniJect.PredicateCondition
+    Constructor .ctor
+    Method Describe
+    Method Matches
+class LaM0uette.UniJect.PreserveAttribute
+    Constructor .ctor
+class LaM0uette.UniJect.PropertyInjectionSite
+    Constructor .ctor
+    Property Parameter
+    Property Setter
+class LaM0uette.UniJect.ReflectionInjectionPlanProvider
+    Constructor .ctor
+    Field Instance
+    Method GetPlan
+class LaM0uette.UniJect.ReflectionInjector
+    Constructor .ctor
+    Constructor .ctor
+    Method CreateInstance
+    Method GetPlan
+    Method Inject
+class LaM0uette.UniJect.Registration
+    Constructor .ctor
+    Method ToString
+    Property Activator
+    Property ConcreteType
+    Property Condition
+    Property ContractTypes
+    Property Id
+    Property Lifetime
+    Property NonLazy
+    Property Origin
+class LaM0uette.UniJect.ResolutionDepthExceededException
+    Constructor .ctor
+    Property Depth
+    Property Path
+class LaM0uette.UniJect.ResolutionPath
+    Constructor .ctor
+    Method Contains
+    Method Describe
+    Method DescribeIndented
+    Method Pop
+    Method Push
+    Method Snapshot
+    Method ToTypeList
+    Property Count
+    Property Frames
+class LaM0uette.UniJect.ResolutionRecord
+    Constructor .ctor
+    Property ConsumerType
+    Property ContractType
+    Property Id
+    Property Registration
+class LaM0uette.UniJect.SelectionFailure
+    Constructor .ctor
+    Method ToString
+    Property Reason
+    Property Registration
+class LaM0uette.UniJect.TypeReferenceComparer
+    Field Instance
+    Method Equals
+    Method GetHashCode
+class LaM0uette.UniJect.UniJectException
+class LaM0uette.UniJect.ValidationIssue
+    Constructor .ctor
+    Method ToString
+    Property Code
+    Property ContractType
+    Property Message
+    Property Origin
+    Property Severity
+class LaM0uette.UniJect.ValidationReport
+    Constructor .ctor
+    Field EMPTY
+    Method ToString
+    Property ErrorCount
+    Property IsClean
+    Property Issues
+    Property WarningCount
+enum LaM0uette.UniJect.BuildPhase
+    Field Building
+    Field Built
+    Field Declaring
+    Field Disposed
+    Field value__
+enum LaM0uette.UniJect.CallSiteCacheLocation
+    Field None
+    Field Root
+    Field Scope
+    Field value__
+enum LaM0uette.UniJect.InjectionSiteKind
+    Field Constructor
+    Field Field
+    Field InjectableInterface
+    Field Method
+    Field Property
+    Field value__
+enum LaM0uette.UniJect.Lifetime
+    Field Scoped
+    Field Singleton
+    Field Transient
+    Field value__
+enum LaM0uette.UniJect.Ownership
+    Field Managed
+    Field None
+    Field UnityComponent
+    Field UnityGameObject
+    Field value__
+enum LaM0uette.UniJect.ValidationSeverity
+    Field Error
+    Field Info
+    Field Warning
+    Field value__
+interface LaM0uette.UniJect.IActivator
+    Method Create
+    Method Inject
+    Property DeclaredDependencies
+    Property Ownership
+    Property ProducedType
+interface LaM0uette.UniJect.IActivatorSource
+    Method Build
+interface LaM0uette.UniJect.IBindingCondition
+    Method Describe
+    Method Matches
+interface LaM0uette.UniJect.IBindingValidation
+    Method Validate
+interface LaM0uette.UniJect.IContainerBuilder
+    Method Add
+    Method Build
+    Method OnBuilt
+    Method TryAdd
+    Property Phase
+interface LaM0uette.UniJect.IDefaultSourceRule
+    Method Resolve
+interface LaM0uette.UniJect.IFactory`1
+    Method Create
+interface LaM0uette.UniJect.IFactory`2
+    Method Create
+interface LaM0uette.UniJect.IFactory`3
+    Method Create
+interface LaM0uette.UniJect.IFactory`4
+    Method Create
+interface LaM0uette.UniJect.IFactory`5
+    Method Create
+interface LaM0uette.UniJect.IFactory`6
+    Method Create
+interface LaM0uette.UniJect.IFactory`7
+    Method Create
+interface LaM0uette.UniJect.IFixedTickable
+    Method FixedTick
+interface LaM0uette.UniJect.IInitializable
+    Method Initialize
+interface LaM0uette.UniJect.IInjectable`1
+    Method Inject
+interface LaM0uette.UniJect.IInjectable`2
+    Method Inject
+interface LaM0uette.UniJect.IInjectable`3
+    Method Inject
+interface LaM0uette.UniJect.IInjectable`4
+    Method Inject
+interface LaM0uette.UniJect.IInjectable`5
+    Method Inject
+interface LaM0uette.UniJect.IInjectable`6
+    Method Inject
+interface LaM0uette.UniJect.IInjectable`7
+    Method Inject
+interface LaM0uette.UniJect.IInjectable`8
+    Method Inject
+interface LaM0uette.UniJect.IInjectionPlanProvider
+    Method GetPlan
+interface LaM0uette.UniJect.IInjector
+    Method CreateInstance
+    Method GetPlan
+    Method Inject
+interface LaM0uette.UniJect.IInstaller
+    Method Install
+interface LaM0uette.UniJect.IInstanceLivenessPolicy
+    Method IsAlive
+interface LaM0uette.UniJect.IInstanceReleaser
+    Method TryRelease
+interface LaM0uette.UniJect.IInstantiator
+    Method CreateInstance
+    Method CreateInstance
+    Method Inject
+interface LaM0uette.UniJect.ILateTickable
+    Method LateTick
+interface LaM0uette.UniJect.IParams`2
+    Property P1
+    Property P2
+interface LaM0uette.UniJect.IParams`3
+    Property P1
+    Property P2
+    Property P3
+interface LaM0uette.UniJect.IParams`4
+    Property P1
+    Property P2
+    Property P3
+    Property P4
+interface LaM0uette.UniJect.IParams`5
+    Property P1
+    Property P2
+    Property P3
+    Property P4
+    Property P5
+interface LaM0uette.UniJect.IParams`6
+    Property P1
+    Property P2
+    Property P3
+    Property P4
+    Property P5
+    Property P6
+interface LaM0uette.UniJect.IProductFactory
+    Method Create
+interface LaM0uette.UniJect.IProductSourceHolder
+    Property ProductSource
+    Property ProductType
+interface LaM0uette.UniJect.IResolutionContext
+    Method ResolveDependency
+    Method TryResolveDependency
+    Property Arguments
+    Property Depth
+    Property Instantiator
+    Property Request
+    Property Resolver
+interface LaM0uette.UniJect.IResolutionObserver
+    Method InjectionCompleted
+    Method ResolutionCompleted
+interface LaM0uette.UniJect.IResolver
+    Method HasBinding
+    Method Resolve
+    Method ResolveAll
+    Method ResolveId
+    Method TryResolve
+    Method TryResolveId
+interface LaM0uette.UniJect.IStaticCondition
+interface LaM0uette.UniJect.ITickRegistry
+    Method Add
+    Method Remove
+interface LaM0uette.UniJect.ITickable
+    Method Tick
+struct LaM0uette.UniJect.BindingOrigin
+    Constructor .ctor
+    Field Unknown
+    Method ToString
+    Property IsKnown
+    Property SourceFile
+    Property SourceLine
+struct LaM0uette.UniJect.InjectionParameter
+    Constructor .ctor
+    Property ContractType
+    Property DefaultValue
+    Property Identifier
+    Property Name
+    Property Optional
+struct LaM0uette.UniJect.ResolutionContext
+    Method ResolveDependency
+    Method TryResolveDependency
+    Property Arguments
+    Property Depth
+    Property Instantiator
+    Property Request
+    Property Resolver
+struct LaM0uette.UniJect.ResolutionFrame
+    Constructor .ctor
+    Method DescribeSite
+    Method ToString
+    Property Identifier
+    Property MemberName
+    Property SiteKind
+struct LaM0uette.UniJect.ResolutionRequest
+    Constructor .ctor
+    Method ForRoot
+    Method ToFrame
+    Property ConsumerInstance
+    Property ConsumerType
+    Property ContractType
+    Property Id
+    Property Identifier
+    Property MemberName
+    Property SiteKind
+struct LaM0uette.UniJect.ServiceIdentifier
+    Constructor .ctor
+    Method Equals
+    Method Equals
+    Method GetHashCode
+    Method ToString
+    Property ContractType
+    Property Id

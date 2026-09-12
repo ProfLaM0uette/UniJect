@@ -18,7 +18,7 @@ and the 46 audited defects of v1. This file is the execution order only.
 | 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | **done, tests partial** |
 | 6 | [Tickables and PlayerLoop](#phase-6--tickables-and-playerloop) | 9 | 18 | 2.5 d | **done** |
 | 7 | [Diagnostics and editor tooling](#phase-7--diagnostics-and-editor-tooling) | 15 | 25 | 8 d | **done, AOT build unverified** |
-| 8 | [Extraction and release](#phase-8--extraction-and-release) | — | — | 0.5 d | not started |
+| 8 | [Extraction and release](#phase-8--extraction-and-release) | — | — | 0.5 d | **prepared, release is yours** |
 | | **v1.0 total** | **~224** | **~386** | **~45 d** | |
 
 **If the scale becomes a problem**, the profitable cut is phases 0 to 5 with no tickables and no
@@ -49,10 +49,12 @@ Package layout, six assemblies, the C# 9 rules, a CI that runs without a Unity l
 - ✅ The embedded package resolves and `testables` makes its test assemblies visible.
 - `LaM0uette.UniJect.Core.Tests` compiles while referencing the core assembly only — provable once
   phase 1 puts a script in it.
-- A test project pinned to `LangVersion 9.0` turns CI red if a `[]` collection expression appears.
-- CI runs the core tests with no Unity licence.
+- ✅ A test project pinned to `LangVersion 9.0` turns CI red if a `[]` collection expression appears —
+  verified in phase 8 by dropping a probe in and reading back `error CS8773`.
+- ✅ CI runs the core tests with no Unity licence: `dotnet test` in `CI~/DotNetTests` runs 87 core
+  tests green in 95 ms, and the `core-tests` workflow runs it on every push.
 
-**Remaining**: the `LangVersion 9.0` guard project and the CI workflow.
+**Phase 0 is fully closed.** Its last two clauses were only demonstrated in phase 8.
 
 ---
 
@@ -481,7 +483,44 @@ knowing before writing more editor code.
 
 ## Phase 8 — Extraction and release
 
-Git repository, tag `v1.0.0`, MGA consumes the package by URL.
+Git repository and tag `v1.0.0`. The dossier also had MGA consume the package by URL; that clause
+is void — see below.
+
+**Status — prepared, not released.** The repository already exists at
+`git@github.com:ProfLaM0uette/UniJect.git` with the dev project and the package together, so there
+is nothing to extract: a consumer installs with
+`https://github.com/ProfLaM0uette/UniJect.git?path=/Packages/com.lam0uette.uniject`, which is the
+form the package README has documented since day one.
+
+**Landed in this phase**
+
+- The phase 0 promise, finally demonstrated rather than claimed: `dotnet test` in
+  `CI~/DotNetTests` runs **87 core tests green in 95 ms with no Unity licence**. That is the
+  engine-free core proving itself outside the editor.
+- The C# 9 guard verified empirically: a `[1, 2, 3]` collection expression dropped into `Runtime/`
+  fails the build with `error CS8773: Feature 'collection expressions' is not available in C# 9.0`.
+  The probe was removed straight after.
+- Three GitHub workflows. `core-tests` and `package-hygiene` run on every push because they need no
+  licence; `package-hygiene` checks that every imported file has a `.meta`, that re-running the
+  arity generator produces no diff, and that the core still compiles as C# 9. `unity-tests` runs
+  **only** on `workflow_dispatch`, weekly, and on `v*` tags — never on every push, which would burn
+  a Personal activation seat.
+- `PublicApiSnapshotTests` with `PublicApi.Core.approved.txt`: **136 public core types**, grouped by
+  type so the diff is readable. It writes the file on first run and fails, so approving a change is
+  a deliberate act.
+- The six samples of D-13, each teaching one thing with a one-paragraph README. All 25 scripts were
+  compiled against the real package API by staging them under `Assets/` and recompiling, then the
+  staging copy was deleted — a sample that does not compile is worse than no sample.
+
+**The MGA half of this phase is void.** The dossier ends with "delete the old library from MGA and
+switch its manifest to the git URL", because it assumed MGA was the downstream consumer driving the
+rewrite. It is not: MGA was only where the v1 source lived, the starting point this package was
+written from. Nothing in MGA is to be touched, now or later, and nothing here depends on it.
+
+**Left to you: tagging.** The work is staged, nothing is committed — committing has been yours each
+phase and stays that way. Worth weighing before a `v1.0.0`: the IL2CPP conformance clause is
+claimed rather than demonstrated, and the test count stands at 135 of the planned ~386. A `v0.9.x`
+would let the package be consumed by URL without freezing a 1.0 contract.
 
 ---
 
