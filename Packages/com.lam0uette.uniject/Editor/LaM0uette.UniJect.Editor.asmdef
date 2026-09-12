@@ -1,0 +1,19 @@
+{
+    "name": "LaM0uette.UniJect.Editor",
+    "rootNamespace": "LaM0uette.UniJect",
+    "references": [
+        "LaM0uette.UniJect",
+        "LaM0uette.UniJect.Unity"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

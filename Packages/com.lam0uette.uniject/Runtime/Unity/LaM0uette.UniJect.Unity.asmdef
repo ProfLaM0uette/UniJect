@@ -1,0 +1,16 @@
+{
+    "name": "LaM0uette.UniJect.Unity",
+    "rootNamespace": "LaM0uette.UniJect",
+    "references": [
+        "LaM0uette.UniJect"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

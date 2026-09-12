@@ -1,0 +1,19 @@
+{
+  "name": "com.lam0uette.uniject",
+  "version": "0.1.0",
+  "displayName": "UniJect",
+  "description": "A zero-dependency dependency injection container for Unity. Immutable container, build-time analysis, cached reflection, deterministic release, and diagnostics that print the full resolution chain.",
+  "unity": "6000.3",
+  "author": {
+    "name": "LaM0uette"
+  },
+  "license": "MIT",
+  "keywords": [
+    "dependency-injection",
+    "di",
+    "ioc",
+    "container",
+    "inversion-of-control"
+  ],
+  "hideInEditor": false
+}
