@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LaM0uette.UniJect
@@ -21,8 +22,13 @@ namespace LaM0uette.UniJect
             DIContainer parent = ResolveParentContainer();
             ContainerBuilder builder = (ContainerBuilder)parent.CreateChildBuilder();
 
-            RunInstallers(builder);
-            Container = builder.Build(UnityContainerOptions.Create());
+            List<string> installerNames = RunInstallers(builder);
+
+            ContainerOptions options = UnityContainerOptions.Create();
+            options.Description = "SceneContext '" + gameObject.scene.name + "'";
+            options.InstallerNames = installerNames;
+
+            Container = builder.Build(options);
 
             SceneScopeRegistry.Register(gameObject.scene, Container);
 
@@ -56,10 +62,12 @@ namespace LaM0uette.UniJect
             return ProjectContext.Container;
         }
 
-        private void RunInstallers(ContainerBuilder builder)
+        private List<string> RunInstallers(ContainerBuilder builder)
         {
+            List<string> names = new List<string>();
+
             if (_installers == null)
-                return;
+                return names;
 
             for (int i = 0; i < _installers.Length; i++)
             {
@@ -69,7 +77,10 @@ namespace LaM0uette.UniJect
                     continue;
 
                 builder.Install(installer);
+                names.Add(installer.GetType().Name);
             }
+
+            return names;
         }
 
         #endregion

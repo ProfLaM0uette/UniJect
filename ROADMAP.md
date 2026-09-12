@@ -17,7 +17,7 @@ and the 46 audited defects of v1. This file is the execution order only.
 | 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | **done, tests partial** |
 | 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | **done, tests partial** |
 | 6 | [Tickables and PlayerLoop](#phase-6--tickables-and-playerloop) | 9 | 18 | 2.5 d | **done** |
-| 7 | [Diagnostics and editor tooling](#phase-7--diagnostics-and-editor-tooling) | 15 | 25 | 8 d | not started |
+| 7 | [Diagnostics and editor tooling](#phase-7--diagnostics-and-editor-tooling) | 15 | 25 | 8 d | **done, AOT build unverified** |
 | 8 | [Extraction and release](#phase-8--extraction-and-release) | — | — | 0.5 d | not started |
 | | **v1.0 total** | **~224** | **~386** | **~45 d** | |
 
@@ -430,6 +430,52 @@ candidate's rejection reason, and every binding carries its own `file:line` via 
 at zero runtime cost.
 
 **Corollary**: the core never logs, it throws.
+
+**Status.** 229 runtime files, 12 editor files, 81 test files, 95 EditMode and 39 PlayMode tests
+green, zero compiler warnings.
+
+**The three debts left by earlier phases are paid.**
+
+- The `Container:` and `Installers:` lines are in the message. `ContainerOptions` carries a
+  `Description` and an `InstallerNames` list that `SceneContext` and `ProjectContext` fill; the
+  core reads strings and still knows nothing about scenes.
+  `BindingNotFound_WhenTheContainerIsDescribed_NamesItAndItsInstallers` asserts both lines, and
+  `BindingNotFound_WithNoDescription_OmitsTheContextBlockEntirely` asserts they vanish when there
+  is nothing to say.
+- `UJ004`, `UJ008` and `UJ009` are emitted. `IBindingValidation` is the seam: `BuildPipeline` calls
+  it while the source is still in hand, collects the issues as warnings, and hands them to the
+  container so `Validate()` returns them alongside the graph walk. `GameObjectSource` implements it.
+  Warnings never block a build — `Build_AWarningOnly_NeverBlocksTheBuild` pins that.
+- `link.xml` is generated. `LinkXmlGenerator` implements `IUnityLinkerProcessor` and writes a
+  `<type preserve="all" />` entry for every type carrying an `[Inject]` site, on top of the static
+  `link.xml` shipped since phase 0.
+
+**`ForbiddenApiTests` turned out to be an audit of all six earlier phases**, and passed first time:
+no `Expression.Compile`, no `Reflection.Emit`, no `DynamicMethod`, no `using UnityEngine` outside
+`Runtime/Unity/`, and no `var` anywhere in the runtime.
+
+**One naming hazard found by the compiler.** The core's `BuildPipeline` shadows
+`UnityEditor.BuildPipeline` for any file in the `LaM0uette.UniJect` namespace — which is every file
+in the package. `StrippingLevelCheck` has to say `UnityEditor.BuildPipeline` explicitly. Worth
+knowing before writing more editor code.
+
+**Deliberately left, and what it would take:**
+
+- **The IL2CPP conformance build is unverified.** `StrippingLevelCheck` and `LinkXmlGenerator` are
+  written and compile, but proving a StandaloneWindows64 IL2CPP player passes `AotConformanceTests`
+  needs the IL2CPP module installed and a real build, which cannot be done from here. This is the
+  one clause of the definition of done that is claimed rather than demonstrated.
+- `InjectionTimelineWindow` is not written. The container window covers the dossier's listed
+  columns; a chronological log is a second window and pure addition.
+- `ContainerWindow` builds its `MultiColumnListView` in code rather than from `ContainerWindow.uxml`
+  and `.uss`. Same result, one fewer pair of files to keep in sync; moving to UXML later is
+  mechanical.
+- `PublicApiSnapshotTests` and `PublicApi.Core.approved.txt` are not written. They are most useful
+  once the surface stops moving, which is phase 8.
+- The window's edit-mode view builds a throwaway container from each `SceneContext`'s installers and
+  disposes it immediately, so it lists real registrations with real `file:line` without entering
+  play mode. It does not yet read a `SceneContext`'s serialised `_installers` array — only
+  installers sitting on the same GameObject.
 
 ---
 

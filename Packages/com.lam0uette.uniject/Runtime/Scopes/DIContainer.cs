@@ -49,6 +49,8 @@ namespace LaM0uette.UniJect
 
         internal int SlotCount { get; }
 
+        internal IReadOnlyList<ValidationIssue> BuildWarnings { get; set; }
+
         internal DIContainer(
             DIContainer parent,
             Registration[] registrations,

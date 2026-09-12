@@ -15,7 +15,18 @@ namespace LaM0uette.UniJect
             object id,
             ResolutionPath path,
             IReadOnlyList<Registration> candidates)
-            : base(ResolutionMessage.AmbiguousBinding(contractType, id, path, candidates))
+            : this(contractType, id, path, candidates, null, null)
+        {
+        }
+
+        internal AmbiguousBindingException(
+            Type contractType,
+            object id,
+            ResolutionPath path,
+            IReadOnlyList<Registration> candidates,
+            string container,
+            string installers)
+            : base(ResolutionMessage.AmbiguousBinding(contractType, id, path, candidates, container, installers))
         {
             ContractType = contractType;
             Id = id;

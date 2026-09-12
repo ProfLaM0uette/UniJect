@@ -51,9 +51,13 @@ namespace LaM0uette.UniJect
             MainThreadGuard.Capture();
 
             ContainerBuilder builder = new ContainerBuilder();
-            RunSettingsInstallers(builder);
+            List<string> installerNames = RunSettingsInstallers(builder);
 
-            _container = builder.Build(UnityContainerOptions.Create());
+            ContainerOptions options = UnityContainerOptions.Create();
+            options.Description = "ProjectContext";
+            options.InstallerNames = installerNames;
+
+            _container = builder.Build(options);
 
             if (Application.isPlaying)
             {
@@ -71,8 +75,9 @@ namespace LaM0uette.UniJect
             return _container;
         }
 
-        private static void RunSettingsInstallers(ContainerBuilder builder)
+        private static List<string> RunSettingsInstallers(ContainerBuilder builder)
         {
+            List<string> names = new List<string>();
             ProjectContextSettings[] settings = Resources.FindObjectsOfTypeAll<ProjectContextSettings>();
 
             for (int i = 0; i < settings.Length; i++)
@@ -81,10 +86,15 @@ namespace LaM0uette.UniJect
 
                 for (int j = 0; j < installers.Count; j++)
                 {
-                    if (installers[j] != null)
-                        builder.Install(installers[j]);
+                    if (installers[j] == null)
+                        continue;
+
+                    builder.Install(installers[j]);
+                    names.Add(installers[j].GetType().Name);
                 }
             }
+
+            return names;
         }
 
         private static void Dispose()

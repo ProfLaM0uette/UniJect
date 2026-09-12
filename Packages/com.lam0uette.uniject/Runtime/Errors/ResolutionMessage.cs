@@ -19,7 +19,9 @@ namespace LaM0uette.UniJect
             Type contractType,
             object id,
             ResolutionPath path,
-            IReadOnlyList<SelectionFailure> nearMatches)
+            IReadOnlyList<SelectionFailure> nearMatches,
+            string container = null,
+            string installers = null)
         {
             string contract = Describe(contractType, id);
             StringBuilder builder = new StringBuilder();
@@ -40,6 +42,8 @@ namespace LaM0uette.UniJect
                     builder.AppendLine().Append("  ").Append(Pad(nearMatches[i].Registration)).Append(nearMatches[i]);
             }
 
+            AppendContext(builder, container, installers);
+
             builder.AppendLine().AppendLine().Append("Fix: bind ").Append(contract)
                 .Append(" in one of your installers, mark the injection site [InjectOptional], ")
                 .Append("or use TryResolve if it is optional.");
@@ -51,7 +55,9 @@ namespace LaM0uette.UniJect
             Type contractType,
             object id,
             ResolutionPath path,
-            IReadOnlyList<Registration> candidates)
+            IReadOnlyList<Registration> candidates,
+            string container = null,
+            string installers = null)
         {
             string contract = Describe(contractType, id);
             StringBuilder builder = new StringBuilder();
@@ -73,6 +79,8 @@ namespace LaM0uette.UniJect
                         .Append(condition);
                 }
             }
+
+            AppendContext(builder, container, installers);
 
             builder.AppendLine().AppendLine()
                 .Append("Fix: give one of them .WithId(...) and the injection site [Inject(...)], ")
@@ -168,6 +176,15 @@ namespace LaM0uette.UniJect
                    ". Bindings are declared in Install() and resolved after Build().";
         }
 
+
+        private static void AppendContext(StringBuilder builder, string container, string installers)
+        {
+            if (container != null)
+                builder.AppendLine().AppendLine().Append("Container: ").Append(container);
+
+            if (installers != null)
+                builder.AppendLine().Append("Installers: ").Append(installers);
+        }
 
         private static void AppendChain(StringBuilder builder, ResolutionPath path)
         {

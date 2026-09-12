@@ -69,7 +69,13 @@ namespace LaM0uette.UniJect
                 if (analysis && !group.AllConditionsStatic)
                     return null;
 
-                throw new AmbiguousBindingException(request.ContractType, request.Id, Snapshot(chain), ambiguous);
+                throw new AmbiguousBindingException(
+                    request.ContractType,
+                    request.Id,
+                    Snapshot(chain),
+                    ambiguous,
+                    ContainerDiagnostics.Describe(_container),
+                    ContainerDiagnostics.DescribeInstallers(_container));
             }
 
             if (winner == null)
@@ -78,7 +84,13 @@ namespace LaM0uette.UniJect
                     return null;
 
                 if (throwOnMissing)
-                    throw new BindingNotFoundException(request.ContractType, request.Id, Snapshot(chain), rejected);
+                    throw new BindingNotFoundException(
+                        request.ContractType,
+                        request.Id,
+                        Snapshot(chain),
+                        rejected,
+                        ContainerDiagnostics.Describe(_container),
+                        ContainerDiagnostics.DescribeInstallers(_container));
 
                 return null;
             }
@@ -207,7 +219,13 @@ namespace LaM0uette.UniJect
             }
 
             if (throwOnMissing)
-                throw new BindingNotFoundException(request.ContractType, request.Id, Snapshot(chain), null);
+                throw new BindingNotFoundException(
+                    request.ContractType,
+                    request.Id,
+                    Snapshot(chain),
+                    null,
+                    ContainerDiagnostics.Describe(_container),
+                    ContainerDiagnostics.DescribeInstallers(_container));
 
             return null;
         }

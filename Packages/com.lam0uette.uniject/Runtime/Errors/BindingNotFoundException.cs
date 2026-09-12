@@ -15,7 +15,18 @@ namespace LaM0uette.UniJect
             object id,
             ResolutionPath path,
             IReadOnlyList<SelectionFailure> nearMatches)
-            : base(ResolutionMessage.BindingNotFound(contractType, id, path, nearMatches))
+            : this(contractType, id, path, nearMatches, null, null)
+        {
+        }
+
+        internal BindingNotFoundException(
+            Type contractType,
+            object id,
+            ResolutionPath path,
+            IReadOnlyList<SelectionFailure> nearMatches,
+            string container,
+            string installers)
+            : base(ResolutionMessage.BindingNotFound(contractType, id, path, nearMatches, container, installers))
         {
             ContractType = contractType;
             Id = id;

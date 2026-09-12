@@ -103,6 +103,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   snapshot.
 - Leaving play mode removes exactly the three nodes this package added and no others. Entering play
   mode repeatedly never stacks duplicates, so every session ticks once per frame.
+- A container window under `Window > UniJect > Container`, listing every binding with its contract,
+  concrete type, lifetime, id, condition, eagerness, state, injection count and `file:line`.
+  Selecting a row opens the installer at that line. It works in play mode against the live
+  containers and in edit mode against a preview built from the open scenes' installers.
+- A play-mode gate: entering play with a binding that cannot be resolved is blocked and the whole
+  validation report is logged. It can be turned off in `Project Settings > UniJect`, next to the
+  captive-dependency check.
+- A `Validate now` button on the `SceneContext` inspector.
+- A generated `link.xml` listing every type that carries an `[Inject]` site, and a build-time
+  warning (`UJ014`) when IL2CPP is paired with managed stripping above `Low`.
+- Resolution failures now name the container and its installers when the container has been given a
+  description, so the message says which scene and which installers were in play.
+- `UJ004`, `UJ008` and `UJ009` are reported as warnings by `Validate()`: two construction sources on
+  one binding, `DontDestroyOnLoad` with an explicit parent, and `DontDestroyOnLoad` declared on a
+  scene container rather than the project one. Warnings never block a build.
 
 ### Fixed
 

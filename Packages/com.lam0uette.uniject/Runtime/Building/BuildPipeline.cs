@@ -14,12 +14,14 @@ namespace LaM0uette.UniJect
 
             IInjector injector = options.ResolveInjector();
             List<Registration> registrations = new List<Registration>(builder.Registrations);
+            List<ValidationIssue> warnings = new List<ValidationIssue>();
+            bool isChildScope = builder.ParentContainer != null;
 
             IReadOnlyList<BindingDraft> drafts = builder.Drafts;
 
             for (int i = 0; i < drafts.Count; i++)
             {
-                Registration registration = ToRegistration(drafts[i], injector, registrations, options);
+                Registration registration = ToRegistration(drafts[i], injector, registrations, options, warnings, isChildScope);
 
                 if (registration != null)
                     registrations.Add(registration);
@@ -39,6 +41,8 @@ namespace LaM0uette.UniJect
                 index,
                 slotOffset + frozen.Length,
                 options);
+
+            container.BuildWarnings = warnings;
 
             AddSelfRegistrations(index, container, injector);
             WarmInjectionPlans(frozen, injector);
@@ -66,7 +70,9 @@ namespace LaM0uette.UniJect
             BindingDraft draft,
             IInjector injector,
             List<Registration> alreadyEmitted,
-            ContainerOptions options)
+            ContainerOptions options,
+            List<ValidationIssue> warnings,
+            bool isChildScope)
         {
             if (draft.ContractTypes.Count == 0)
                 throw new InvalidBindingException(IssueCode.UJ003, null, draft.Origin, "the binding declares no contract");
@@ -78,6 +84,7 @@ namespace LaM0uette.UniJect
 
             Lifetime lifetime = ResolveLifetime(draft, source);
             ValidateCombination(draft, source, lifetime);
+            CollectWarnings(draft, source, warnings, isChildScope);
 
             IActivator activator = source.Build(draft.ConcreteType, injector);
 
@@ -94,6 +101,26 @@ namespace LaM0uette.UniJect
                 condition,
                 draft.NonLazy,
                 draft.Origin);
+        }
+
+        private static void CollectWarnings(
+            BindingDraft draft,
+            IActivatorSource source,
+            List<ValidationIssue> warnings,
+            bool isChildScope)
+        {
+            if (draft.SourceAssignments > 0)
+            {
+                warnings.Add(new ValidationIssue(
+                    IssueCode.UJ004,
+                    ValidationSeverity.Warning,
+                    "UniJect: " + IssueCode.UJ004 + " — two distinct construction sources were declared; the last one wins.",
+                    draft.ContractTypes[0],
+                    draft.Origin));
+            }
+
+            if (source is IBindingValidation validation)
+                validation.Validate(draft.Origin, isChildScope, warnings);
         }
 
         private static IActivatorSource ResolveSource(BindingDraft draft, ContainerOptions options)

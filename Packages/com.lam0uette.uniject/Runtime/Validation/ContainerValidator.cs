@@ -7,6 +7,10 @@ namespace LaM0uette.UniJect
         public static ValidationReport Validate(DIContainer container)
         {
             List<ValidationIssue> issues = new List<ValidationIssue>();
+
+            if (container.BuildWarnings != null)
+                issues.AddRange(container.BuildWarnings);
+
             IReadOnlyList<Registration> registrations = container.Registrations;
 
             for (int i = 0; i < registrations.Count; i++)

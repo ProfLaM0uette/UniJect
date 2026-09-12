@@ -23,6 +23,12 @@ namespace LaM0uette.UniJect
             return CONTAINERS.TryGetValue(scene, out container);
         }
 
+        public static void CollectAll(List<DIContainer> destination)
+        {
+            foreach (KeyValuePair<Scene, DIContainer> entry in CONTAINERS)
+                destination.Add(entry.Value);
+        }
+
         public static bool TryGetScene(DIContainer container, out Scene scene)
         {
             foreach (KeyValuePair<Scene, DIContainer> entry in CONTAINERS)

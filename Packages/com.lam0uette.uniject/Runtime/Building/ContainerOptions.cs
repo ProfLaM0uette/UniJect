@@ -56,6 +56,8 @@ namespace LaM0uette.UniJect
         public IReadOnlyList<IInstanceReleaser> Releasers { get; set; }
         public IDefaultSourceRule DefaultSourceRule { get; set; }
         public ITickRegistry TickRegistry { get; set; }
+        public string Description { get; set; }
+        public IReadOnlyList<string> InstallerNames { get; set; }
 
         #endregion
 
