@@ -8,12 +8,21 @@ A Unity 6000.6.0f1 project whose only purpose is to host and exercise **UniJect*
 dependency injection container. The shippable artifact is the embedded package at
 `Packages/com.lam0uette.uniject/`; everything else is scaffolding.
 
-The host project has been stripped to the bone: the URP template is gone (Built-in Render Pipeline,
-no render pipeline asset), and `Assets/` holds exactly one scene, `Assets/Scenes/Sandbox.unity`,
-with a Main Camera and a Directional Light. Four packages remain beyond the built-in modules:
-`test-framework`, `ide.rider`, and the two the Unity CLI needs (`pipeline`, `inputsystem`).
-**Keep it that way** — anything added to `Assets/` or to the manifest is noise in a library project,
-so put test fixtures in the package's test assemblies, not in `Assets/`.
+The host project is stripped to the bone: the URP template is gone (Built-in Render Pipeline, no
+render pipeline asset), and four packages remain beyond the built-in modules: `test-framework`,
+`ide.rider`, and the two the Unity CLI needs (`pipeline`, `inputsystem`). **Keep the manifest that
+way.**
+
+`Assets/` holds exactly two things, both deliberate:
+
+- `Assets/Scenes/Sandbox.unity` — an empty scene with a camera and a light, for scratch work.
+- `Assets/Demo/` — a working demo scene, `UniJectDemo.unity`, that exercises every binding shape and
+  prints what it proves to the console. It is the thing to open when someone asks what the library
+  looks like in use, and `Assets/Demo/README.md` maps each printed line back to the binding that
+  produced it. **Do not delete it**, and update it when the binding grammar changes.
+
+Nothing else belongs in `Assets/`: test fixtures live in the package's test assemblies, and
+compile-only examples live in `Samples~/`, which Unity never compiles.
 
 The library is being rewritten from a v1 that lives in another project (MGA). There is no v1 code
 here — this is a clean implementation against a frozen specification, built phase by phase.
