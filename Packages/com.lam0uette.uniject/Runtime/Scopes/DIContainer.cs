@@ -16,6 +16,7 @@ namespace LaM0uette.UniJect
         private readonly CallSiteFactory _callSites;
         private readonly CallSiteChain _chain;
         private readonly PendingInjectionSet _pending;
+        private readonly LifecycleRunner _lifecycle;
         private readonly List<DIContainer> _children;
         private readonly IInjector _injector;
         private readonly IInstanceLivenessPolicy _liveness;
@@ -46,6 +47,8 @@ namespace LaM0uette.UniJect
             get { return _callSites; }
         }
 
+        internal int SlotCount { get; }
+
         internal DIContainer(
             DIContainer parent,
             Registration[] registrations,
@@ -62,11 +65,13 @@ namespace LaM0uette.UniJect
             _injector = options.ResolveInjector();
             _liveness = options.ResolveLiveness();
             _observer = options.ResolveObserver();
+            SlotCount = storeSize;
             _store = new InstanceStore(storeSize);
             _disposal = new DisposalTracker(options.ResolveReleasers());
             _callSites = new CallSiteFactory(this);
-            _chain = new CallSiteChain();
+            _chain = parent == null ? new CallSiteChain() : parent._chain;
             _pending = new PendingInjectionSet();
+            _lifecycle = new LifecycleRunner();
             _children = new List<DIContainer>();
 
             parent?._children.Add(this);
@@ -225,6 +230,7 @@ namespace LaM0uette.UniJect
             {
                 _store.Clear();
                 _callSites.Clear();
+                _lifecycle.Clear();
             }
         }
 
@@ -260,7 +266,7 @@ namespace LaM0uette.UniJect
                     if (registration.Condition != null && !registration.Condition.Matches(in elementRequest))
                         continue;
 
-                    CallSite site = new CallSite(registration, group.AllConditionsStatic);
+                    CallSite site = new CallSite(registration, group.AllConditionsStatic, current);
                     instances.Add(current.GetOrActivate(site, in elementRequest, NO_ARGUMENTS, 0));
                 }
             }
@@ -300,6 +306,11 @@ namespace LaM0uette.UniJect
             return true;
         }
 
+        internal void RunInitialize()
+        {
+            _lifecycle.Initialize();
+        }
+
         internal void ResolveNonLazy()
         {
             for (int i = 0; i < _registrations.Length; i++)
@@ -310,7 +321,7 @@ namespace LaM0uette.UniJect
                     continue;
 
                 ResolutionRequest request = ResolutionRequest.ForRoot(registration.ContractTypes[0], registration.Id);
-                CallSite site = new CallSite(registration, true);
+                CallSite site = new CallSite(registration, true, this);
                 GetOrActivate(site, in request, NO_ARGUMENTS, 0);
             }
         }
@@ -324,7 +335,7 @@ namespace LaM0uette.UniJect
             if (site.CacheLocation == CallSiteCacheLocation.None)
                 return Activate(site, in request, arguments, depth);
 
-            DIContainer owner = site.CacheLocation == CallSiteCacheLocation.Root ? Root : this;
+            DIContainer owner = site.CacheLocation == CallSiteCacheLocation.Root ? site.Owner ?? Root : this;
 
             if (owner._store.TryGet(site.StoreSlot, out object cached) && _liveness.IsAlive(cached))
                 return cached;
@@ -347,6 +358,7 @@ namespace LaM0uette.UniJect
                 object created = site.Activator.Create(in context);
 
                 _disposal.Track(created, site.Activator.Ownership);
+                _lifecycle.Register(created);
 
                 if (_pending.TryBegin(created))
                     site.Activator.Inject(created, in context);
@@ -376,6 +388,7 @@ namespace LaM0uette.UniJect
 
                 _store.Set(site.StoreSlot, created);
                 _disposal.Track(created, site.Activator.Ownership);
+                _lifecycle.Register(created);
 
                 try
                 {

@@ -85,15 +85,6 @@ namespace LaM0uette.UniJect
             return BuildPipeline.Build(this, options ?? ContainerOptions.Default);
         }
 
-        public void Install(IInstaller installer)
-        {
-            if (installer == null)
-                throw new ArgumentNullException(nameof(installer));
-
-            AssertDeclaring("run an installer");
-            installer.Install(this);
-        }
-
 
         internal BindingDraft AddDraft(BindingDraft draft)
         {

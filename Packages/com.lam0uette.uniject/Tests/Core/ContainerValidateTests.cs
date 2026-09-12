@@ -83,6 +83,34 @@ namespace LaM0uette.UniJect
         }
 
         [Test]
+        public void Build_ASingletonDependingOnAScopedService_IsACaptiveDependencyError()
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.Bind<ScopedService>().AsScoped();
+            builder.Bind<SingletonWithScopedDependency>().AsSingleton();
+
+            ContainerValidationException exception =
+                Assert.Throws<ContainerValidationException>(() => builder.Build(ContainerOptions.Strict));
+
+            Assert.That(exception.Report.Issues[0].Code, Is.EqualTo(IssueCode.UJ012));
+            Assert.That(exception.Report.Issues[0].Message, Does.Contain(nameof(ScopedService)));
+        }
+
+        [Test]
+        public void Build_ASingletonDependingOnAScopedServiceWithScopeCheckingOff_IsAccepted()
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.Bind<ScopedService>().AsScoped();
+            builder.Bind<SingletonWithScopedDependency>().AsSingleton();
+
+            using (DIContainer container = builder.Build(ContainerOptions.Relaxed))
+            {
+                Assert.That(container.Resolve<SingletonWithScopedDependency>().Service, Is.Not.Null);
+            }
+        }
+
+
+        [Test]
         public void Build_WithValidateOnBuildAndAHealthyGraph_Succeeds()
         {
             ContainerBuilder builder = new ContainerBuilder();

@@ -29,13 +29,16 @@ namespace LaM0uette.UniJect
                 InjectionSiteKind.Constructor);
 
             CallSiteChain chain = new CallSiteChain();
-            CallSite site = new CallSite(registration, true);
+            CallSite site = new CallSite(registration, true, container);
 
             chain.Push(in request, registration.Lifetime);
 
             try
             {
                 container.CallSites.BuildDependencies(site, chain);
+
+                if (container.Options.ValidateScopes)
+                    CaptiveDependencyValidator.Validate(registration, site, issues);
             }
             catch (InvalidBindingException exception)
             {

@@ -8,7 +8,7 @@ namespace LaM0uette.UniJect
 
         public virtual bool IsEnabled
         {
-            get { return isActiveAndEnabled; }
+            get { return enabled && gameObject.activeInHierarchy; }
         }
 
         public virtual void Install()

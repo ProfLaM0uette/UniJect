@@ -8,16 +8,18 @@ namespace LaM0uette.UniJect
         public int StoreSlot { get; }
         public IActivator Activator { get; }
         public bool IsCacheable { get; }
+        public DIContainer Owner { get; }
 
         public CallSite[] Dependencies { get; set; }
 
-        public CallSite(Registration registration, bool isCacheable)
+        public CallSite(Registration registration, bool isCacheable, DIContainer owner)
         {
             Registration = registration;
             Lifetime = registration.Lifetime;
             StoreSlot = registration.StoreSlot;
             Activator = registration.Activator;
             IsCacheable = isCacheable;
+            Owner = owner;
             CacheLocation = ToCacheLocation(registration.Lifetime);
         }
 

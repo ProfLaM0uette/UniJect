@@ -83,7 +83,7 @@ namespace LaM0uette.UniJect
                 return null;
             }
 
-            CallSite site = new CallSite(winner, group.AllConditionsStatic);
+            CallSite site = new CallSite(winner, group.AllConditionsStatic, owner);
 
             if (chain.Contains(request.Identifier))
             {
@@ -224,7 +224,7 @@ namespace LaM0uette.UniJect
                 false,
                 BindingOrigin.Unknown);
 
-            CallSite site = new CallSite(registration, true);
+            CallSite site = new CallSite(registration, true, _container);
             site.Dependencies = NO_DEPENDENCIES;
 
             return site;

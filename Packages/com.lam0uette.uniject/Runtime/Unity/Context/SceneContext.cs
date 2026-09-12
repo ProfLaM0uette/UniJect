@@ -10,6 +10,7 @@ namespace LaM0uette.UniJect
 
         [SerializeField] private MonoInstallerBase[] _installers;
         [SerializeField] private SceneInjectionMode _injectionMode = SceneInjectionMode.WholeScene;
+        [SerializeField] private SceneContext _parentContext;
 
         public DIContainer Container { get; private set; }
 
@@ -17,25 +18,41 @@ namespace LaM0uette.UniJect
         {
             MainThreadGuard.Capture();
 
-            ContainerBuilder builder = new ContainerBuilder();
+            DIContainer parent = ResolveParentContainer();
+            ContainerBuilder builder = (ContainerBuilder)parent.CreateChildBuilder();
+
             RunInstallers(builder);
-
             Container = builder.Build(UnityContainerOptions.Create());
-            Container.ResolveNonLazy();
 
+            SceneScopeRegistry.Register(gameObject.scene, Container);
+
+            Container.ResolveNonLazy();
             SceneInjector.Inject(Container, gameObject.scene, _injectionMode, this);
+            Container.RunInitialize();
         }
 
         private void OnDestroy()
         {
-            Container?.Dispose();
+            if (Container == null)
+                return;
+
+            SceneScopeRegistry.Unregister(gameObject.scene);
+
+            Container.Dispose();
             Container = null;
         }
-
 
         #endregion
 
         #region Methods
+
+        private DIContainer ResolveParentContainer()
+        {
+            if (_parentContext != null && _parentContext.Container != null)
+                return _parentContext.Container;
+
+            return ProjectContext.Container;
+        }
 
         private void RunInstallers(ContainerBuilder builder)
         {

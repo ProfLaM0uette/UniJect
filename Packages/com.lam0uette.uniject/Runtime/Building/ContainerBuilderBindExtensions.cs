@@ -41,6 +41,18 @@ namespace LaM0uette.UniJect
         }
 
 
+        public static void Install(this IContainerBuilder builder, IInstaller installer)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            if (installer == null)
+                throw new ArgumentNullException(nameof(installer));
+
+            installer.Install(builder);
+        }
+
+
         private static BindingDraft Declare(
             IContainerBuilder builder,
             Type contractType,

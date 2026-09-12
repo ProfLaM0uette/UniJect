@@ -13,7 +13,7 @@ and the 46 audited defects of v1. This file is the execution order only.
 | 0 | [Foundations](#phase-0--foundations) | 14 | 3 | 0.5 d | **done** |
 | 1 | [Vertical slice](#phase-1--vertical-slice) | 68 | 95 | 8 d | **done, tests partial** |
 | 2 | [Identity, conditions, validation](#phase-2--identity-conditions-validation) | 26 | 90 | 8 d | **done, tests partial** |
-| 3 | [Scope tree](#phase-3--scope-tree) | 20 | 50 | 5 d | not started |
+| 3 | [Scope tree](#phase-3--scope-tree) | 20 | 50 | 5 d | **done, tests partial** |
 | 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | not started |
 | 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | not started |
 | 6 | [Tickables and PlayerLoop](#phase-6--tickables-and-playerloop) | 9 | 18 | 2.5 d | not started |
@@ -200,6 +200,50 @@ member-edge cycle between non-transient registrations is allowed because the cac
 
 Adding a third lifetime later is the change that cannot be made, which is why scopes land before
 the GameObject work.
+
+**Status — the definition of done is met for everything a test can reach.** 130 runtime files, 49
+test files, 63 EditMode and 11 PlayMode tests green, zero compiler warnings. Covered:
+`Resolve_AParentSingletonFromTwoChildren_ReturnsTheSameInstance`,
+`Resolve_AChildBindingThatShadowsTheParent_PrefersTheNearestScope`,
+`AsScoped_ResolvedFromTwoChildren_GivesEachChildItsOwnInstance`,
+`Dispose_AChild_ReleasesOnlyItsOwnInstances`, `Dispose_AParent_DisposesItsChildrenFirst`,
+`Build_ASingletonDependingOnAScopedService_IsACaptiveDependencyError` (UJ012),
+`Awake_TwoSceneContexts_GetSeparateContainersUnderOneProjectRoot`, and the three
+`UniJectStaticsResetTests`.
+
+**Two real bugs the scope tree exposed in the phase 1 and 2 code**, both found by writing the tests
+rather than by reading:
+
+- **Store slots were numbered per container.** A `Singleton` declared in a child was stored in the
+  root's array at the child's index, and a `Scoped` declared in a parent was stored in the child's
+  array at an index past its end — an `ArgumentOutOfRangeException` the moment a scope tree exists.
+  Slots are now numbered continuously across the tree, and a `CallSite` carries the container that
+  *declares* the registration, so a singleton is cached where it was declared rather than blindly at
+  the root.
+- **The cycle chain was per container.** A resolution crossing a scope boundary split its chain in
+  two, so a cycle passing through a parent could not be seen. The chain is now shared down from the
+  root, which is correct because resolution is single-threaded by contract.
+
+**One deviation from the dossier.** `MonoInstallerBase.IsEnabled` returns
+`enabled && gameObject.activeInHierarchy` rather than `isActiveAndEnabled`. They mean the same
+thing, but `isActiveAndEnabled` is still false for a component added to an inactive GameObject at
+the moment `SceneContext.Awake` runs — `SceneContext` has execution order −9999, so it awakes before
+the installer's own `OnEnable`. The explicit form keeps the intent the dossier asks for (an
+installer on an inactive GameObject does not install) without depending on a transient flag.
+
+**Deliberately left for later:**
+
+- **Tests: 74 of the planned ~235 across phases 1 to 3.**
+- `OnBuilt` callbacks run, but nothing in the Unity layer uses them yet.
+- `ProjectContextSettings` is discovered with `Resources.FindObjectsOfTypeAll`, which picks up
+  Preloaded Assets without a `Resources/` folder, as the dossier requires. There is no editor tooling
+  yet to create the asset or add it to Preloaded Assets — that is phase 7's settings provider.
+- The full additive-scene scenario is exercised through two `SceneContext` instances sharing one
+  project root, not through two genuinely additively-loaded scenes. `SceneScopeRegistry` is keyed by
+  the `Scene` struct and tested, so the remaining gap is the scene-loading harness, which belongs
+  with the phase 4 PlayMode fixture.
+- The "enter Play three times without editing" protocol is covered structurally by
+  `UniJectStaticsResetTests` rather than by three real Play sessions.
 
 ---
 

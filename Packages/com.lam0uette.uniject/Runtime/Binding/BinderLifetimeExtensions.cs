@@ -10,6 +10,14 @@ namespace LaM0uette.UniJect
             return binder;
         }
 
+        public static Binder<TContract, TConcrete> AsScoped<TContract, TConcrete>(
+            this Binder<TContract, TConcrete> binder)
+            where TConcrete : TContract
+        {
+            binder.Draft.SetLifetime(Lifetime.Scoped);
+            return binder;
+        }
+
         public static Binder<TContract, TConcrete> AsTransient<TContract, TConcrete>(
             this Binder<TContract, TConcrete> binder)
             where TConcrete : TContract

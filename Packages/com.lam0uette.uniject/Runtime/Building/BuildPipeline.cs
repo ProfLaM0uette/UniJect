@@ -28,14 +28,16 @@ namespace LaM0uette.UniJect
             Registration[] frozen = registrations.ToArray();
             Dictionary<ServiceIdentifier, RegistrationGroup> index = Index(frozen);
 
+            int slotOffset = builder.ParentContainer == null ? 0 : builder.ParentContainer.SlotCount;
+
             for (int i = 0; i < frozen.Length; i++)
-                frozen[i].StoreSlot = i;
+                frozen[i].StoreSlot = slotOffset + i;
 
             DIContainer container = new DIContainer(
                 builder.ParentContainer,
                 frozen,
                 index,
-                frozen.Length,
+                slotOffset + frozen.Length,
                 options);
 
             AddSelfRegistrations(index, container, injector);

@@ -41,6 +41,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   nothing. Failures are collected into a `ValidationReport` rather than thrown one at a time.
 - Build-time cycle detection with the path printed, aware of lifetimes: a constructor cycle is
   always an error, a member-injection cycle between non-transient bindings is allowed.
+- A scope tree: `CreateChildBuilder()`, `AsScoped()`, and the rule that the nearest container wins.
+  A singleton is cached where it was declared, a scoped service once per container that resolves it.
+  Disposing a container disposes its children first and never touches its parent's instances.
+- `ProjectContext`, a root container created before the first scene loads, configured by a
+  `ProjectContextSettings` asset in Preloaded Assets and its `ScriptableObjectInstaller` list.
+- `SceneContext` now builds a child of the project container, or of another scene context for
+  additive scenes, and registers itself in a scene-keyed registry for the duration of the scene.
+- `IInitializable`, run after the eager-loading and scene-injection passes in creation order.
+- `UJ012`: a singleton that depends on a scoped service is reported as a captive dependency when
+  scope checking is on.
+- A statics reset table that runs at subsystem registration, so entering play mode repeatedly with
+  domain reload disabled behaves identically every time.
 
 ### Fixed
 
