@@ -70,6 +70,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Destroying a container destroys the GameObjects it created and nothing else: a component it merely
   found on a scene object is never destroyed.
 
+### Added
+
+- Factories: `BindFactory`, `BindFactoryTo`, `BindPlaceholderFactory` and `BindPlaceholderFactoryTo`,
+  each up to six parameters, with the product-first generic order preserved.
+- The `IFactory`, `PlaceholderFactory`, `IParams`, `Params` and `IInjectable` families, emitted by a
+  hand-run generator whose output is committed. Re-running it produces no change.
+- Placement verbs on a placeholder factory whose product is a `Component`, so a spawned product can
+  be named, parented and posed from the binding.
+- `UJ013`: a factory whose parameter list matches no constructor of its product is reported when the
+  container is built, not when something first calls `Create`.
+
+### Fixed
+
+- `BindFactory<T>().FromMethod(...)` now calls the delegate it was given. The v1 cast to
+  `Func<TProduct>` was a conversion that cannot exist, so it was always null and every such binding
+  silently ignored its lambda.
+- `IParams` is flat instead of an inheritance tower, so an `IParams<string, int, float>` can no
+  longer satisfy a binding that asked for `IParams<string, int>`.
+- `IInjectable<...>` is recognised by exact open-generic match against the generated type list,
+  never by a name prefix, so a user interface that merely starts with `IInjectable` is left alone.
+
 ### Fixed
 
 - An unregistered type now throws instead of resolving to `null`, and there is no last-resort

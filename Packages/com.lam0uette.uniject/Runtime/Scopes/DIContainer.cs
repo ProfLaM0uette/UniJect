@@ -240,6 +240,30 @@ namespace LaM0uette.UniJect
             return _index.TryGetValue(identifier, out group);
         }
 
+        internal object ActivateProduct(IActivator activator, IReadOnlyList<object> arguments)
+        {
+            AssertUsable("create a product");
+            MainThreadGuard.Assert();
+
+            ResolutionRequest request = ResolutionRequest.ForRoot(activator.ProducedType, null);
+            ResolutionContext context = new ResolutionContext(
+                this,
+                in request,
+                arguments ?? NO_ARGUMENTS,
+                0,
+                _chain.Path);
+
+            object created = activator.Create(in context);
+
+            _disposal.Track(created, activator.Ownership);
+            _lifecycle.Register(created);
+
+            if (_pending.TryBegin(created))
+                activator.Inject(created, in context);
+
+            return created;
+        }
+
         internal void AdoptToRoot(object instance)
         {
             if (ReferenceEquals(this, Root))

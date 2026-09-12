@@ -15,7 +15,7 @@ and the 46 audited defects of v1. This file is the execution order only.
 | 2 | [Identity, conditions, validation](#phase-2--identity-conditions-validation) | 26 | 90 | 8 d | **done, tests partial** |
 | 3 | [Scope tree](#phase-3--scope-tree) | 20 | 50 | 5 d | **done, tests partial** |
 | 4 | [GameObjects, prefabs, placement](#phase-4--gameobjects-prefabs-placement) | 27 | 60 | 8 d | **done, tests partial** |
-| 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | not started |
+| 5 | [Factories and arity families](#phase-5--factories-and-arity-families) | 45 | 45 | 5 d | **done, tests partial** |
 | 6 | [Tickables and PlayerLoop](#phase-6--tickables-and-playerloop) | 9 | 18 | 2.5 d | not started |
 | 7 | [Diagnostics and editor tooling](#phase-7--diagnostics-and-editor-tooling) | 15 | 25 | 8 d | not started |
 | 8 | [Extraction and release](#phase-8--extraction-and-release) | — | — | 0.5 d | not started |
@@ -328,6 +328,51 @@ component search has to happen after injection.
 **Fixes** D6 (`method as Func<TProduct>` is a contravariant conversion that does not exist, so it
 was always `null` and every `BindFactory<T>().FromMethod(...)` silently ignored its lambda), D14,
 D16, D24, D25, D30.
+
+**Status — the definition of done is met.** 218 runtime files (42 of them generated), 66 test files,
+75 EditMode and 29 PlayMode tests green, zero compiler warnings.
+`BindFactory_WithFromMethod_ActuallyCallsTheDelegate` counts the invocations, which is **D6**: the
+delegate is now `Func<IResolver, TProduct>`, strongly typed, with no cast to fail silently.
+`BindFactory_WhoseParameterMatchesNoProductConstructor_ThrowsAtBuild` is UJ013.
+`BindPlaceholderFactory_AnOverriddenCreate_IsTheOneThatRuns` keeps `Create` virtual.
+`Params_OfThreeArguments_IsNotAssignableToParamsOfTwo` proves `IParams` is flat rather than an
+inheritance tower, which is what used to satisfy the wrong binding silently.
+`BindPlaceholderFactory_WithParentThenRoot_EndsAtTheSceneRoot` is the placement verbs on a factory.
+
+**The generator is idempotent**, verified by hashing all 42 outputs, re-running it, and diffing:
+identical. It takes the package root as its argument —
+`dotnet run --project "Tools~/ArityGenerator/ArityGenerator.csproj" -- <package root>`.
+
+**One error in the dossier, found by the compiler.** `BindPlaceholderFactoryTo` is specified as
+`where TFactory : TInterface, PlaceholderFactory<TProduct>`. C# requires a class-type constraint to
+come first, so that does not compile; the generator emits
+`where TFactory : PlaceholderFactory<TProduct>, TInterface`, which means the same thing.
+
+**One addition the dossier's file count omits.** `PlaceholderFactory<TProduct>` is abstract, so
+`BindFactory<TProduct>()` — which binds no user factory class — has nothing concrete to hand back
+as an `IFactory<TProduct>`. The generator emits an `internal sealed ProductFactoryAdapter` per
+arity (7 files) to fill that hole. They are internal, so the public surface is unchanged, and D-04's
+deleted public `Factory` class is not resurrected.
+
+**How AOT safety is kept.** No `MakeGenericType`, no `Activator.CreateInstance` on a runtime-built
+generic. Each generated `BindFactory` overload closes over its own adapter constructor as a lambda
+(`productFactory => new ProductFactoryAdapter<TProduct, P1>(productFactory)`), so every generic
+instantiation the container needs is statically present at the call site where the user wrote the
+binding.
+
+**One resolution path for every product.** `ActivatorProductFactory` goes through
+`DIContainer.ActivateProduct`, which runs the product's `IActivator`. A plain class therefore goes
+through `ConstructorActivator`, a `Component` through `ComponentActivator` — placement verbs and
+all — and a `FromMethod` product through `DelegateActivator`, with no special-casing anywhere.
+
+**Deliberately left for later:**
+
+- **Tests: 104 of the planned ~340 across phases 1 to 5.**
+- `CappedArgumentPool` is written and registered but not yet on the hot path; `ReflectionInjector`
+  still allocates its argument arrays. Wiring it in is a contained optimisation with no API change,
+  and there is no consumer to profile yet.
+- `BindFactoryTo` binds the user's own `IFactory` implementation and lets the container construct
+  it, which is all it can mean once the factory class is the user's.
 
 ---
 

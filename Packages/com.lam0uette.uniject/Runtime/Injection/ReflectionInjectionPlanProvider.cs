@@ -11,7 +11,7 @@ namespace LaM0uette.UniJect
         private static readonly Dictionary<Type, InjectionPlan> PLANS =
             new Dictionary<Type, InjectionPlan>(TypeReferenceComparer.Instance);
 
-        private static readonly Type[] INJECTABLE_DEFINITIONS = new Type[0];
+        private static readonly Type[] INJECTABLE_DEFINITIONS = InjectableDefinitions.ALL;
 
         private static readonly string[] STOP_TYPE_NAMES =
         {
